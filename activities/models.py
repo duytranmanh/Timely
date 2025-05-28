@@ -41,4 +41,4 @@ class Activity(models.Model):
     mood = models.CharField(max_length=20, choices=MOOD_CHOICES)
 
     def __str__(self):
-        return f'{self.name} {self.author.username}'
+        return f'{self.category.name} {self.author.username}'
