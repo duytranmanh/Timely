@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .validator import validate_hex_color
+from .validators import validate_hex_color
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
