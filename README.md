@@ -1,103 +1,164 @@
-# Timely – Time Tracking & Visualization Web App
+# Timely
 
-Timely is a personal time management web app that helps users log their daily activities, track energy and mood levels, and visualize how they spend time using intuitive reports and charts.
+---
+
+## Table of Contents
+
+---
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [API Overview](#api-overview)
+- [Setup and Installation](#setup-and-installation)
+- [Future Plans](#future-plans)
+
+
+## Introduction
+
+---
+**Timely** is a time management web application that helps users track their daily activities, moods, and energy levels. It provides visual insights into how time is spent and how users feel throughout the day, week, and month.
+
+
 
 ## Features
 
-- Category management with full CRUD APIs
-- Each category includes: name, color, default status, and user reference
-- Custom hex color validation
-- Basic API testing with Django test framework and Postman
-- JWT authentication planned
-- Activity tracking & reporting features planned
+---
+
+- **User Authentication**  
+  JWT-based login and registration, with secure token refresh to keep users logged in.
+
+
+- **Activity Tracking**  
+  Log daily activities with:
+  - Category
+  - Mood
+  - Energy level
+  - Time spent  
+
+
+- **Category Management**  
+  - Create and manage user-defined categories.
+  - Assign colors for easy visual identification.
+
+
+- **Reports & Visualizations**
+  - **Daily Summary**
+    - Time spent per category (for pie chart)
+    - Average energy level
+  - **Weekly Summary**
+    - Time spent per category
+    - Highest and lowest average energy categories
+  - **Monthly Summary**
+    - Time spent per category
+    - Highest and lowest average energy categories
+
+
+- **Secure and Scalable Backend**
+  - Built with Django and Django REST Framework.
+  - Supports PostgreSQL for production and SQLite for local development.
 
 ## Tech Stack
 
-- **Backend:** Python, Django, Django REST Framework
-- **Database:** SQLite (for dev), PostgreSQL (planned for production)
-- **Testing:** Django `APITestCase`, Postman
-- **Frontend:** React + chart library (planned)
-- **Deployment:** Docker Compose (planned)
+---
 
-## Setup Instructions
+- **Backend**
+  - Django
+  - Django REST Framework
+  - djangorestframework-simplejwt (JWT authentication)
 
-### Local Development
 
-1. Clone the repository:
-```
-git clone <your-repo-url>
-cd timely
-```
+- **Database**
+  - SQLite (for local development)
+  - PostgreSQL (for production)
 
-2. Create and activate a virtual environment:
-```
-python3 -m venv .venv
-source .venv/bin/activate
-```
 
-3. Install dependencies:
-```
-pip install -r requirements.txt
-```
+- **Authentication**
+  - JWT (JSON Web Token)
 
-4. Run database migrations:
-```
-python manage.py makemigrations
-python manage.py migrate
-```
 
-5. Start the development server:
-```
-python manage.py runserver
-```
+- **Frontend**
+  - To be decided (planned: React or Angular)
 
-## API Endpoints – Categories
 
-Base path: `/api/categories/`
+- **Deployment**
+  - Docker (optional, for containerization)
+  - Deployment platform TBD
 
-| Method | Endpoint        | Description                    |
-|--------|------------------|--------------------------------|
-| GET    | `/`              | List all categories            |
-| POST   | `/`              | Create a new category          |
-| GET    | `/<id>/`         | Retrieve a category by ID      |
-| PUT    | `/<id>/`         | Fully update a category        |
-| PATCH  | `/<id>/`         | Partially update a category    |
-| DELETE | `/<id>/`         | Delete a category              |
+## API Overview
 
-> Requires: `name`, `color` (hex), `is_default`, and `user` (can be auto-assigned via `request.user`)
+### Users
+| Method | Endpoint                  | Description               |
+|--------|---------------------------|---------------------------|
+| POST   | `/api/auth/register/`     | Register a new user       |
+| POST   | `/api/auth/login/`        | Obtain JWT tokens         |
+| POST   | `/api/auth/refresh/`      | Refresh JWT token         |
+| GET    | `/api/auth/me/`           | Get current user info     |
 
-## Running Tests
+### Activities
+| Method | Endpoint                  | Description               |
+|--------|---------------------------|---------------------------|
+| GET    | `/api/activities/`        | List all activities       |
+| POST   | `/api/activities/`        | Create a new activity     |
+| GET    | `/api/activities/{id}/`   | Retrieve an activity      |
+| PUT    | `/api/activities/{id}/`   | Update an activity        |
+| DELETE | `/api/activities/{id}/`   | Delete an activity        |
 
-To run all tests:
-```
+### Categories
+| Method | Endpoint                  | Description               |
+|--------|---------------------------|---------------------------|
+| GET    | `/api/categories/`        | List all categories       |
+| POST   | `/api/categories/`        | Create a new category     |
+| GET    | `/api/categories/{id}/`   | Retrieve a category       |
+| PUT    | `/api/categories/{id}/`   | Update a category         |
+| DELETE | `/api/categories/{id}/`   | Delete a category         |
 
-python manage.py test
+### Reports
+_(to be added)_
 
-```
 
-Includes:
-- Serializer validation tests
-- API endpoint tests (create, list, etc.)
-- Test user setup in isolated test DB
 
-## Postman Testing Tips
 
-- Use an environment variable: `baseUrl = http://127.0.0.1:8000`
-- Build a collection for `GET`, `POST`, etc. under `/api/categories/`
-- Add tests to assert:
-  - Status code = 201/200
-  - Response contains expected fields
-  - Chaining with `createdCatId`
+## Setup and Installation
 
-## Roadmap
+---
 
-- [ ] Add Activities app with mood, energy, timestamps
-- [ ] Daily, weekly, and monthly report generation
-- [ ] JWT authentication and user isolation
-- [ ] Containerized setup with Docker
-- [ ] React frontend for data visualization
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/timely.git
+   cd timely
 
-## Author
 
-Duy Tran – Computer Science @ UW-Madison  
-Currently building Timely to explore backend architecture and API-first design.
+2. **Create a virtual environment and activate it**
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate  # On Mac/Linux
+   .venv\Scripts\activate     # On Windows
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply migrations**
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Run the development server**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+6. **Access the API**
+
+   * Visit `http://127.0.0.1:8000/api/` in your browser or use a tool like Postman.
+
+## Future Plans
+
+---
