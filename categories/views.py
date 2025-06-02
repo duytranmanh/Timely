@@ -11,8 +11,5 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     # Assign current user to the category if creating new
-    # TODO: remove this for full functionality
-    # def perform_create(self, serializer):
-    #
-    #     serializer.save(user=self.request.user)
-
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, is_default=True)
