@@ -1,0 +1,46 @@
+# ====================================
+# FRONTEND (.gitignore for ./timely-frontend)
+# ====================================
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules and build outputs
+timely-frontend/node_modules/
+timely-frontend/dist/
+timely-frontend/dist-ssr/
+*.local
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ====================================
+# BACKEND (.gitignore for ./timely-backend)
+# ====================================
+
+# Python cache
+timely-backend/__pycache__/
+timely-backend/*.py[cod]
+
+# Virtual environment
+timely-backend/.venv/
+
+# Django db and logs
+*.sqlite3
+
+# Static/media (optional, if generated)
+timely-backend/staticfiles/
+timely-backend/media/
