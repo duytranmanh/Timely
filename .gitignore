@@ -1,5 +1,5 @@
 # ====================================
-# FRONTEND (.gitignore for ./timely-frontend)
+# FRONTEND (.gitignore for ./timely-backend-frontend)
 # ====================================
 
 # Logs
@@ -28,7 +28,7 @@ timely-frontend/dist-ssr/
 *.sw?
 
 # ====================================
-# BACKEND (.gitignore for ./timely-backend)
+# BACKEND (.gitignore for ./timely-backend-backend)
 # ====================================
 
 # Python cache

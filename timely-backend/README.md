@@ -1,164 +1,81 @@
-# Timely
+# Timely Backend
+
+This is the backend service for the **Timely** time management application. It provides RESTful APIs for managing users, activities, categories, and reports.
 
 ---
 
-## Table of Contents
+## Technology Stack
+
+* Python 3.12
+* Django 4.x
+* Django REST Framework
+* SQLite (default for local development)
 
 ---
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [API Overview](#api-overview)
-- [Setup and Installation](#setup-and-installation)
-- [Future Plans](#future-plans)
+## Getting Started
 
+### 1. Clone the Repository
 
-## Introduction
-
----
-**Timely** is a time management web application that helps users track their daily activities, moods, and energy levels. It provides visual insights into how time is spent and how users feel throughout the day, week, and month.
-
-
-
-## Features
+```bash
+git clone https://github.com/yourusername/timely.git
+cd timely/timely-backend
+```
 
 ---
 
-- **User Authentication**  
-  JWT-based login and registration, with secure token refresh to keep users logged in.
+### 2. Create a Virtual Environment and Install Dependencies
 
-
-- **Activity Tracking**  
-  Log daily activities with:
-  - Category
-  - Mood
-  - Energy level
-  - Time spent  
-
-
-- **Category Management**  
-  - Create and manage user-defined categories.
-  - Assign colors for easy visual identification.
-
-
-- **Reports & Visualizations**
-  - **Daily Summary**
-    - Time spent per category (for pie chart)
-    - Average energy level
-  - **Weekly Summary**
-    - Time spent per category
-    - Highest and lowest average energy categories
-  - **Monthly Summary**
-    - Time spent per category
-    - Highest and lowest average energy categories
-
-
-- **Secure and Scalable Backend**
-  - Built with Django and Django REST Framework.
-  - Supports PostgreSQL for production and SQLite for local development.
-
-## Tech Stack
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
 ---
 
-- **Backend**
-  - Django
-  - Django REST Framework
-  - djangorestframework-simplejwt (JWT authentication)
+### 3. Apply Migrations
 
-
-- **Database**
-  - SQLite (for local development)
-  - PostgreSQL (for production)
-
-
-- **Authentication**
-  - JWT (JSON Web Token)
-
-
-- **Frontend**
-  - To be decided (planned: React or Angular)
-
-
-- **Deployment**
-  - Docker (optional, for containerization)
-  - Deployment platform TBD
-
-## API Overview
-
-### Users
-| Method | Endpoint                  | Description               |
-|--------|---------------------------|---------------------------|
-| POST   | `/api/auth/register/`     | Register a new user       |
-| POST   | `/api/auth/login/`        | Obtain JWT tokens         |
-| POST   | `/api/auth/refresh/`      | Refresh JWT token         |
-| GET    | `/api/auth/me/`           | Get current user info     |
-
-### Activities
-| Method | Endpoint                  | Description               |
-|--------|---------------------------|---------------------------|
-| GET    | `/api/activities/`        | List all activities       |
-| POST   | `/api/activities/`        | Create a new activity     |
-| GET    | `/api/activities/{id}/`   | Retrieve an activity      |
-| PUT    | `/api/activities/{id}/`   | Update an activity        |
-| DELETE | `/api/activities/{id}/`   | Delete an activity        |
-
-### Categories
-| Method | Endpoint                  | Description               |
-|--------|---------------------------|---------------------------|
-| GET    | `/api/categories/`        | List all categories       |
-| POST   | `/api/categories/`        | Create a new category     |
-| GET    | `/api/categories/{id}/`   | Retrieve a category       |
-| PUT    | `/api/categories/{id}/`   | Update a category         |
-| DELETE | `/api/categories/{id}/`   | Delete a category         |
-
-### Reports
-_(to be added)_
-
-
-
-
-## Setup and Installation
+```bash
+python manage.py migrate
+```
 
 ---
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/timely.git
-   cd timely
+### 4. Run the Development Server
 
+```bash
+python manage.py runserver
+```
 
-2. **Create a virtual environment and activate it**
-
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # On Mac/Linux
-   .venv\Scripts\activate     # On Windows
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Apply migrations**
-
-   ```bash
-   python manage.py migrate
-   ```
-
-5. **Run the development server**
-
-   ```bash
-   python manage.py runserver
-   ```
-
-6. **Access the API**
-
-   * Visit `http://127.0.0.1:8000/api/` in your browser or use a tool like Postman.
-
-## Future Plans
+The backend will be available at `http://localhost:8000/`.
 
 ---
+
+## Running Tests
+
+```bash
+python manage.py test
+```
+
+---
+
+## Environment Variables
+
+* `SECRET_KEY` — Django secret key for cryptographic signing (can be set in `.env` or in `settings.py`).
+* `DEBUG` — Enable or disable debug mode (set to `True` by default in development).
+
+---
+
+## API Documentation
+
+See the separate [API Documentation](../api-docs.md) for details about available endpoints.
+
+---
+
+## Notes
+
+* By default, the backend uses **SQLite** for local development.
+* For production, consider switching to PostgreSQL or another robust RDBMS.
+* CORS settings may need adjustment depending on the frontend deployment.
+

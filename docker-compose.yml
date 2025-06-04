@@ -3,27 +3,27 @@ services:
     build: timely-frontend/.
     ports:
       - "8080:80"
-    container_name: timely-frontend
+    container_name: timely-backend-frontend
     restart: unless-stopped
 
   backend:
     build: timely-backend/.
     ports:
       - "8000:8000"
-    container_name: timely-backend
+    container_name: timely-backend-backend
     restart: unless-stopped
 
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: timely-admin
+      POSTGRES_USER: timely-backend-admin
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: timely-db
+      POSTGRES_DB: timely-backend-db
     ports:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-    container_name: timely-db
+    container_name: timely-backend-db
     restart: unless-stopped
 
 volumes:
