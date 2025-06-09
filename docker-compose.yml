@@ -3,14 +3,14 @@ services:
     build: timely-frontend/.
     ports:
       - "8080:80"
-    container_name: timely-backend-frontend
+    container_name: timely-frontend
     restart: unless-stopped
 
   backend:
     build: timely-backend/.
     ports:
       - "8000:8000"
-    container_name: timely-backend-backend
+    container_name: timely-backend
     restart: unless-stopped
 
   db:
@@ -23,7 +23,7 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-    container_name: timely-backend-db
+    container_name: timely-db
     restart: unless-stopped
 
 volumes:
