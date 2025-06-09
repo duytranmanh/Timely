@@ -23,6 +23,14 @@ def generate_report(user, start_date, end_date, period_label):
         total_hours += duration
         activity_summary[act.category.name] += duration
 
+    # Calculate total period hours
+    total_period_hours = (end_date - start_date + timedelta(days=1)).total_seconds() / 3600
+
+    # Calculate undefined time
+    undefined_hours = total_period_hours - total_hours
+    if undefined_hours > 0:
+        activity_summary["undefined"] = undefined_hours
+
     activities_list = [
         {
             "name": name,
@@ -34,7 +42,6 @@ def generate_report(user, start_date, end_date, period_label):
 
     return {
         "period": period_label,
-        "total_hours": round(total_hours, 2),
         "activities": activities_list
     }
 
