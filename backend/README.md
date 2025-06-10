@@ -19,7 +19,7 @@ This is the backend service for the **Timely** time management application. It p
 
 ```bash
 git clone https://github.com/yourusername/timely.git
-cd timely/timely-backend
+cd timely/backend
 ```
 
 ---

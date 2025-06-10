@@ -1,5 +1,5 @@
 # ====================================
-# FRONTEND (.gitignore for ./timely-backend-frontend)
+# FRONTEND (.gitignore for ./backend-frontend)
 # ====================================
 
 # Logs
@@ -11,9 +11,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Node modules and build outputs
-timely-frontend/node_modules/
-timely-frontend/dist/
-timely-frontend/dist-ssr/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
 *.local
 
 # Editor directories and files
@@ -28,19 +28,19 @@ timely-frontend/dist-ssr/
 *.sw?
 
 # ====================================
-# BACKEND (.gitignore for ./timely-backend-backend)
+# BACKEND (.gitignore for ./backend-backend)
 # ====================================
 
 # Python cache
-timely-backend/__pycache__/
+backend/__pycache__/
 timely-backend/*.py[cod]
 
 # Virtual environment
-timely-backend/.venv/
+backend/.venv/
 
 # Django db and logs
 *.sqlite3
 
 # Static/media (optional, if generated)
-timely-backend/staticfiles/
-timely-backend/media/
+backend/staticfiles/
+backend/media/
