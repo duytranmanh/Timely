@@ -9,7 +9,6 @@ class ActivitySerializer(serializers.ModelSerializer):
         model = Activity
         fields = '__all__'
 
-    # TODO: inclusive start and exclusive end time for activities
     def validate(self, data):
         author = self.context['request'].user
         start = data['start_time']

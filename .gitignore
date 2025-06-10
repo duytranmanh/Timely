@@ -32,8 +32,8 @@ frontend/dist-ssr/
 # ====================================
 
 # Python cache
-backend/__pycache__/
-timely-backend/*.py[cod]
+backend/*/__pycache__/
+*.py[cod]
 
 # Virtual environment
 backend/.venv/
