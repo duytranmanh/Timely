@@ -12,4 +12,4 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     # Assign current user to the category if creating new
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, is_default=True)
+        serializer.save(user=self.request.user, is_default=False)
