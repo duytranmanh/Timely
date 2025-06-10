@@ -35,7 +35,7 @@ def generate_report(user, start_date, end_date, period_label):
         {
             "name": name,
             "hours": round(hours, 2),
-            "percentage": round((hours / total_hours) * 100, 2) if total_hours > 0 else 0
+            "percentage": round((hours / total_period_hours) * 100, 2)
         }
         for name, hours in activity_summary.items()
     ]
