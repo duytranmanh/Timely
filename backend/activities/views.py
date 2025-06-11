@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
 
 from activities.models import Activity
 from .serializers import ActivitySerializer
+from rest_framework.response import Response
 
 
 # Create your views here.
@@ -19,3 +21,14 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class MoodChoicesView(APIView):
+    """
+    Returns available moods in activities for selection
+    """
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        mood_choices = [c[1] for c in Activity.MOOD_CHOICES]
+        return Response(mood_choices)
