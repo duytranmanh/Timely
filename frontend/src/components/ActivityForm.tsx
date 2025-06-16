@@ -5,11 +5,17 @@ import TimeSelector from "./TimeSelector"
 import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"
 
-function ActivityForm() {
+// TODO: pass down date props
+
+type ActivityFormProps = {
+    date: Date,
+    setDate: (val: Date) => void
+}
+
+function ActivityForm({date, setDate} : ActivityFormProps) {
     const [category, setCategory] = useState("")
     const [mood, setMood] = useState("")
     const [energy, setEnergy] = useState(5)
-    const [date, setDate] = useState(new Date())
     const [startTime, setStartTime] = useState("10:30")
     const [endTime, setEndTime] = useState("12:30")
     const [notes, setNotes] = useState("")
