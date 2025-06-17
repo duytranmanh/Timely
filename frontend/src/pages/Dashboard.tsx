@@ -3,55 +3,65 @@ import ActivityForm from "@/components/ActivityForm"
 import ActivityList from "@/components/ActivityList"
 import Navbar from "@/components/NavBar"
 import type { Activity } from "@/types/Activity"
-import ReportPanel from "@/components/ReportPanel"
 import type { ChartConfig } from "@/components/ui/chart"
-
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-]
-
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig
+import TimeUsagePanel from "@/components/TimeUsagePanel"
+import CategoryTrendPanel from "@/components/CategoryTrendPanel"
+import CategorySelectorPanel from "@/components/CategorySelector"
 
 function Dashboard() {
   const [date, setDate] = useState<Date>(new Date())
   const [activities, setActivities] = useState<Activity[]>([])
 
+  // TODO: replace with actual backend call
+  function simulateReportFetch(type: string): Promise<{
+    data: any[];
+    config: ChartConfig;
+    period: string;
+  }> {
+    const now = new Date()
+    let period = now.toLocaleDateString()
+
+    if (type === "weekly") {
+      const start = new Date(now)
+      start.setDate(now.getDate() - 6)
+      period = `${start.toLocaleDateString()} – ${now.toLocaleDateString()}`
+    }
+
+    if (type === "monthly") {
+      const start = new Date(now)
+      start.setDate(now.getDate() - 31)
+      period = `${start.toLocaleDateString()} – ${now.toLocaleDateString()}`
+    }
+
+    const demoData = [
+      { browser: "Study", visitors: 275, fill: "var(--chart-1)" },
+      { browser: "Work", visitors: 200, fill: "var(--chart-2)" },
+      { browser: "Leisure", visitors: 150, fill: "var(--chart-3)" },
+    ]
+
+    const config = {
+      visitors: { label: "Time (%)" },
+      Study: { label: "Study", color: "var(--chart-1)" },
+      Work: { label: "Work", color: "var(--chart-2)" },
+      Leisure: { label: "Leisure", color: "var(--chart-3)" },
+    }
+
+    return Promise.resolve({
+      data: demoData,
+      config,
+      period,
+    })
+  }
+
+
   async function fetchActivityFromDate(date: Date): Promise<Activity[]> {
     // TODO: replace with actual backend call
-    await fetch(`TODO: insert URL here ${date.toISOString().split("T")[0]}`, {
+    await fetch(`insert URL here ${date.toISOString().split("T")[0]}`, {
       headers: {
-        Authorization: "TODO: insert authorized token",
+        Authorization: "insert authorized token",
       },
     })
-    return [] // TODO: return actual fetched data
+    return [] // return actual fetched data
   }
 
   useEffect(() => {
@@ -120,27 +130,11 @@ function Dashboard() {
 
         {/* Report Panels */}
         <div className="flex flex-col md:flex-row justify-between gap-6">
-          <ReportPanel
-            cardDescription="Daily Report"
-            reportPeriod="1/1/2001"
-            title="Report"
-            config={chartConfig}
-            data={chartData}
+          <TimeUsagePanel
+            title="Time Usage"
+            fetchReport={simulateReportFetch}
           />
-          <ReportPanel
-            cardDescription="Daily Report"
-            reportPeriod="1/1/2001"
-            title="Report"
-            config={chartConfig}
-            data={chartData}
-          />
-          <ReportPanel
-            cardDescription="Daily Report"
-            reportPeriod="1/1/2001"
-            title="Report"
-            config={chartConfig}
-            data={chartData}
-          />
+            <CategoryTrendPanel />
         </div>
       </div>
     </>

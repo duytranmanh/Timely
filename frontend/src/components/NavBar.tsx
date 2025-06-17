@@ -1,7 +1,7 @@
 "use client"
 
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
-import { Clock, ContainerIcon, TimerResetIcon } from "lucide-react"
+import { TimerResetIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Link } from "react-router-dom"
 
