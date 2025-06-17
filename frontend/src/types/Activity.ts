@@ -1,6 +1,6 @@
 export type Activity = {
     id: number,
-    category: number,
+    category: string,
     notes?: string,
     start_time: string,
     end_time: string,
