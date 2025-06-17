@@ -7,6 +7,7 @@ import type { ChartConfig } from "@/components/ui/chart"
 import TimeUsagePanel from "@/components/TimeUsagePanel"
 import CategoryTrendPanel from "@/components/CategoryTrendPanel"
 import CategorySelectorPanel from "@/components/CategorySelector"
+import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
 
 function Dashboard() {
   const [date, setDate] = useState<Date>(new Date())
@@ -134,7 +135,8 @@ function Dashboard() {
             title="Time Usage"
             fetchReport={simulateReportFetch}
           />
-            <CategoryTrendPanel />
+          <CategoryTrendPanel />
+          <EnergyCircadianPanel/>
         </div>
       </div>
     </>
