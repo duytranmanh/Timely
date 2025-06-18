@@ -11,6 +11,7 @@ type ActivityFormProps = {
 }
 
 function ActivityForm({ date }: ActivityFormProps) {
+    // TODO: fetch mood and categories
     const [category, setCategory] = useState("")
     const [mood, setMood] = useState("")
     const [energy, setEnergy] = useState(5)
@@ -29,9 +30,12 @@ function ActivityForm({ date }: ActivityFormProps) {
     }
 
     const handleSubmit = (e: React.FormEvent) => {
+        // TODO: send the form to backend
         e.preventDefault()
         console.log({ category, mood, energy, startTime, endTime, notes })
     }
+
+    
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-md shadow-md bg-white w-full h-full">
