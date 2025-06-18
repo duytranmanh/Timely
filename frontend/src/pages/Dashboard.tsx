@@ -2,22 +2,23 @@ import { useEffect, useState } from "react"
 import ActivityForm from "@/components/ActivityForm"
 import ActivityList from "@/components/ActivityList"
 import Navbar from "@/components/NavBar"
+import DateSelector from "@/components/DateSelector"
 import type { Activity } from "@/types/Activity"
 import type { ChartConfig } from "@/components/ui/chart"
 import TimeUsagePanel from "@/components/TimeUsagePanel"
 import CategoryTrendPanel from "@/components/CategoryTrendPanel"
-import CategorySelectorPanel from "@/components/CategorySelector"
 import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 function Dashboard() {
   const [date, setDate] = useState<Date>(new Date())
   const [activities, setActivities] = useState<Activity[]>([])
 
-  // TODO: replace with actual backend call
+  // Simulate report fetching
   function simulateReportFetch(type: string): Promise<{
-    data: any[];
-    config: ChartConfig;
-    period: string;
+    data: any[]
+    config: ChartConfig
+    period: string
   }> {
     const now = new Date()
     let period = now.toLocaleDateString()
@@ -54,20 +55,8 @@ function Dashboard() {
     })
   }
 
-
-  async function fetchActivityFromDate(date: Date): Promise<Activity[]> {
-    // TODO: replace with actual backend call
-    await fetch(`insert URL here ${date.toISOString().split("T")[0]}`, {
-      headers: {
-        Authorization: "insert authorized token",
-      },
-    })
-    return [] // return actual fetched data
-  }
-
   useEffect(() => {
-    // TODO: uncomment this line
-    // fetchActivityFromDate(date).then(setActivities)
+    // Replace with real fetch later
     setActivities([
       {
         id: 1,
@@ -115,33 +104,45 @@ function Dashboard() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-4 pt-20 pb-20">
-        <div className="flex gap-6">
-          <div className="w-1/2">
-            <ActivityForm date={date} setDate={setDate} />
+      <div className="container mx-auto px-4 pt-20 pb-20 space-y-10">
+        {/* DATE SELECTOR HEADER */}
+        <section className="space-y-3">
+          <h1 className="text-2xl font-bold">Select a Date</h1>
+          <p className="text-muted-foreground text-sm">
+            All activities and reports below are for the selected day.
+          </p>
+          <DateSelector date={date} onChange={setDate} />
+        </section>
+
+        {/* FORM + LIST */}
+
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/3">
+            <ActivityForm date={date} />
           </div>
-          <div className="w-1/2">
-            <ActivityList activities={activities} />
+          <div className="w-full md:w-2/3">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Logged Activities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ActivityList activities={activities} />
+              </CardContent>
+            </Card>
           </div>
         </div>
 
-        {/* Divider and Header for Reports */}
-        <hr className="my-10 border-gray-300" />
-        <h1 className="text-2xl font-semibold mb-6">Reports</h1>
-
-        {/* Report Panels */}
+        {/* REPORTS */}
+        <hr className="my-6 border-gray-300" />
+        <h2 className="text-2xl font-semibold mb-4">Reports</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
-          <TimeUsagePanel
-            title="Time Usage"
-            fetchReport={simulateReportFetch}
-          />
+          <TimeUsagePanel title="Time Usage" fetchReport={simulateReportFetch} />
           <CategoryTrendPanel />
-          <EnergyCircadianPanel/>
+          <EnergyCircadianPanel />
         </div>
       </div>
     </>
   )
-
 }
 
 export default Dashboard

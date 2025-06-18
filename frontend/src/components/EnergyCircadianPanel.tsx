@@ -42,7 +42,7 @@ export default function EnergyCircadianPanel() {
     <Card className="w-full md:w-1/2 lg:w-1/3">
       <CardHeader>
         <CardTitle>Energy Circadian Rhythm</CardTitle>
-        <CardDescription>Visualizing average energy across the day</CardDescription>
+        <CardDescription>Visualizing energy level throughout the day</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
