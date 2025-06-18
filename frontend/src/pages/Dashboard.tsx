@@ -134,7 +134,7 @@ function Dashboard() {
 
         {/* REPORTS */}
         <hr className="my-6 border-gray-300" />
-        <h2 className="text-2xl font-semibold mb-4">Reports</h2>
+        <h2 className="text-2xl font-semibold mb-4">Insights</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <TimeUsagePanel title="Time Usage" fetchReport={simulateReportFetch} />
           <CategoryTrendPanel />
