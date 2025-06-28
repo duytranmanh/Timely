@@ -16,6 +16,10 @@ frontend/dist/
 frontend/dist-ssr/
 *.local
 
+# Environment variables
+frontend/.env
+frontend/.env.*  # ignores .env.production, .env.development, etc.
+
 # Editor directories and files
 .vscode/
 !.vscode/extensions.json
@@ -44,3 +48,6 @@ backend/.venv/
 # Static/media (optional, if generated)
 backend/staticfiles/
 backend/media/
+
+# Environment variables
+backend/.env
