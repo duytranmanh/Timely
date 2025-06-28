@@ -1,5 +1,6 @@
 from collections import defaultdict
-from datetime import timedelta
+from datetime import timedelta, date
+
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -23,10 +24,8 @@ def generate_report(user, start_date, end_date, period_label):
         total_hours += duration
         activity_summary[act.category.name] += duration
 
-    # Calculate total period hours
     total_period_hours = (end_date - start_date + timedelta(days=1)).total_seconds() / 3600
 
-    # Calculate undefined time
     undefined_hours = total_period_hours - total_hours
     if undefined_hours > 0:
         activity_summary["undefined"] = undefined_hours
@@ -46,16 +45,27 @@ def generate_report(user, start_date, end_date, period_label):
     }
 
 
+def get_selected_date(request):
+    date_str = request.query_params.get("date")
+    try:
+        return date.fromisoformat(date_str) if date_str else timezone.localdate()
+    except ValueError:
+        return None
+
+
 class DailyReportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        today = timezone.localdate()
+        selected_date = get_selected_date(request)
+        if not selected_date:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+
         report = generate_report(
             user=request.user,
-            start_date=today,
-            end_date=today,
-            period_label=str(today)
+            start_date=selected_date,
+            end_date=selected_date,
+            period_label=str(selected_date)
         )
         return Response(report)
 
@@ -64,8 +74,11 @@ class WeeklyReportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        today = timezone.localdate()
-        start_of_week = today - timedelta(days=today.weekday())
+        selected_date = get_selected_date(request)
+        if not selected_date:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+
+        start_of_week = selected_date - timedelta(days=selected_date.weekday())
         end_of_week = start_of_week + timedelta(days=6)
         period_label = f"{start_of_week} to {end_of_week}"
 
@@ -82,13 +95,17 @@ class MonthlyReportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        today = timezone.localdate()
-        first_of_month = today.replace(day=1)
-        if today.month == 12:
-            next_month = today.replace(year=today.year + 1, month=1, day=1)
+        selected_date = get_selected_date(request)
+        if not selected_date:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+
+        first_of_month = selected_date.replace(day=1)
+        if selected_date.month == 12:
+            next_month = selected_date.replace(year=selected_date.year + 1, month=1, day=1)
         else:
-            next_month = today.replace(month=today.month + 1, day=1)
+            next_month = selected_date.replace(month=selected_date.month + 1, day=1)
         last_of_month = next_month - timedelta(days=1)
+
         period_label = f"{first_of_month} to {last_of_month}"
 
         report = generate_report(
