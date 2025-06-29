@@ -30,5 +30,5 @@ class MoodChoicesView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        mood_choices = [c[1] for c in Activity.MOOD_CHOICES]
+        mood_choices = [{"value": c[0], "label": c[1]} for c in Activity.MOOD_CHOICES]
         return Response(mood_choices)

@@ -11,6 +11,7 @@ This document outlines the API endpoints, methods, status codes, request/respons
 * [Categories](#categories)
 * [Activities](#activities)
 * [Reports](#reports)
+* [Trends](#trends)
 * [Notes](#notes)
 
 ---
@@ -438,6 +439,32 @@ Authorization: Bearer <access_token>
 ```
 No Content
 ```
+---
+
+
+### Get Available Mood Options
+
+**GET** `/api/activities/moods/`
+
+Returns all available mood choices used in activities, for display in forms or filters.
+
+**Status Codes:**
+- `200 OK`: Mood choices returned successfully.
+
+**Response (200):**
+```json
+[
+  { "value": "happy", "label": "Happy" },
+  { "value": "sad", "label": "Sad" },
+  { "value": "excited", "label": "Excited" },
+  ...
+]
+```
+
+**Notes:**
+- This endpoint is public (`IsAuthenticatedOrReadOnly`) and does not require a token for read-only access.
+- The list is static and defined in the `Activity` model's `MOOD_CHOICES`.
+- Useful for populating dropdowns or tag selectors in the frontend.
 
 ---
 
