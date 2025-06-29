@@ -82,17 +82,12 @@ function ActivityForm({ date, setActivities }: ActivityFormProps) {
 
     }
 
-    //TODO: delete this
-    if (moodOptions && categoryOptions) {
-        // console.log("have both options")
-    }
-
     useEffect(() => {
         async function fetchCategoryAndMoodOptions() {
           try {
             const [categoryRes, moodRes] = await Promise.all([
               authFetch(`${API_URL}/categories/`),
-              authFetch(`${API_URL}/moods/`)
+              authFetch(`${API_URL}/activities/moods/`)
             ])
       
             if (categoryRes.ok && moodRes.ok) {
@@ -101,7 +96,7 @@ function ActivityForm({ date, setActivities }: ActivityFormProps) {
       
               setCategoryOptions(
                 categoryData.map((c: any) => ({
-                  value: c.id,
+                  value: c.id.toString(),
                   label: c.name
                 }))
               )
@@ -112,6 +107,7 @@ function ActivityForm({ date, setActivities }: ActivityFormProps) {
                   label: m.label
                 }))
               )
+
             } else {
               console.warn("Failed to fetch category or mood options")
             }
@@ -129,17 +125,14 @@ function ActivityForm({ date, setActivities }: ActivityFormProps) {
             <h2 className="text-xl font-semibold">Log Activity</h2>
 
             <CategoryComboBox
-                options={[
-                    { value: "work", label: "Work" },
-                    { value: "rest", label: "Rest" },
-                    { value: "hangout", label: "Hangout" },
-                ]}
+                options={categoryOptions}
                 value={category}
                 onChange={setCategory}
                 className="w-full"
             />
 
             <MoodComboBox
+                options={moodOptions}
                 value={mood}
                 onChange={setMood}
                 className="w-full"

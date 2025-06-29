@@ -2,21 +2,17 @@
 import { BaseComboBox, type ComboOption } from "./BaseComboBox"
 
 type MoodComboBoxProps = {
+  options: ComboOption[]
   value: string
   onChange: (val: string) => void
   className?: string
 }
 
-const moodOptions: ComboOption[] = [
-  { value: "tired", label: "Tired" },
-  { value: "happy", label: "Happy" },
-  { value: "angry", label: "Angry" },
-]
 
-export function MoodComboBox({ value, onChange, className }: MoodComboBoxProps) {
+export function MoodComboBox({options, value, onChange, className }: MoodComboBoxProps) {
   return (
     <BaseComboBox
-      options={moodOptions}
+      options={options}
       value={value}
       onChange={onChange}
       placeholder="Mood"
