@@ -343,15 +343,22 @@ Authorization: Bearer <access_token>
 
 ```json
 {
-    "id": 7,
-    "author": 8,
-    "notes": "Worked on project",
-    "start_time": "2025-06-02T09:00:00Z",
-    "end_time": "2025-06-02T10:00:00Z",
-    "energy_level": 7,
-    "mood": "happy",
-    "category": 11
-}
+        "id": 7,
+        "start_time": "2025-06-02T09:00:00Z",
+        "end_time": "2025-06-02T10:00:00Z",
+        "category": {
+            "id": 11,
+            "name": "Senior Factors Developer",
+            "is_default": false,
+            "color": "#6d6859",
+            "description": "",
+            "user": 2
+        },
+        "author": 8,
+        "notes": "Worked on project",
+        "energy_level": 4,
+        "mood": "happy"
+    }
 ```
 
 ---
@@ -390,15 +397,22 @@ Authorization: Bearer <access_token>
 
 ```json
 {
-    "id": 7,
-    "author": 8,
-    "notes": "Worked on project",
-    "start_time": "2025-06-02T09:00:00Z",
-    "end_time": "2025-06-02T10:00:00Z",
-    "energy_level": 7,
-    "mood": "happy",
-    "category": 11
-}
+        "id": 7,
+        "start_time": "2025-06-02T09:00:00Z",
+        "end_time": "2025-06-02T10:00:00Z",
+        "category": {
+            "id": 11,
+            "name": "Senior Factors Developer",
+            "is_default": false,
+            "color": "#6d6859",
+            "description": "",
+            "user": 2
+        },
+        "author": 8,
+        "notes": "Worked on project",
+        "energy_level": 4,
+        "mood": "happy"
+    }
 ```
 
 ---
@@ -525,7 +539,7 @@ Authorization: Bearer <access_token>
     "period": "2025-06-01 to 2025-06-30",
     "activities": [
         {
-            "name": "Senior Factors Developer",
+            "name": "Gaming",
             "hours": 1.0,
             "percentage": 0.14
         },
@@ -539,6 +553,73 @@ Authorization: Bearer <access_token>
 ```
 
 ---
+
+## Trends
+
+### Category Trend Report
+
+**GET** `/api/reports/trends/categories/`
+
+This endpoint returns a time series breakdown of hours spent per category, grouped by day/week/month, for a specified time window.
+
+**Query Parameters:**
+- `type` (optional): `daily` (default), `weekly`, or `monthly`
+- `date` (optional): end date for trend data (default: today); format: `YYYY-MM-DD`
+- `categories` (optional): comma-separated list of category IDs to filter by (e.g., `1,2,3`)
+
+**Status Codes:**
+- `200 OK`: Trend data retrieved successfully.
+- `400 Bad Request`: Invalid date format, category ID list, or missing required parameters.
+- `401 Unauthorized`: Missing or invalid token.
+
+**Headers:**
+```http
+Authorization: Bearer <access_token>
+```
+
+**Response (200):**
+```json
+{
+  "type": "weekly",
+  "start": "2025-05-05",
+  "end": "2025-06-30",
+  "data": [
+    {
+      "category_id": 1,
+      "category_name": "Study",
+      "trend": [
+        { "label": "2025-W21", "hours": 2.0 },
+        { "label": "2025-W22", "hours": 3.5 },
+        ...
+      ]
+    },
+    {
+      "category_id": 2,
+      "category_name": "Exercise",
+      "trend": [
+        { "label": "2025-W21", "hours": 0.0 },
+        { "label": "2025-W22", "hours": 1.0 },
+        ...
+      ]
+    }
+  ]
+}
+```
+
+**Possible Errors:**
+- `400 Bad Request` if:
+  - `date` is not in `YYYY-MM-DD` format
+  - `categories` contains invalid (non-numeric) values
+- `401 Unauthorized` if the JWT access token is missing or invalid
+
+**Notes:**
+- The API ensures all selected categories are returned, even if no activity exists for some.
+- Each trend item always includes a full series with 0.0 hours where data is missing.
+- Labels (`label`) will be formatted as:
+  - `YYYY-MM-DD` for daily
+  - `YYYY-W##` for weekly
+  - `YYYY-MM` for monthly
+
 
 ---
 
