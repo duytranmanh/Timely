@@ -7,11 +7,11 @@ import {
     TableCell,
   } from "@/components/ui/table"
   import { Trash } from "lucide-react"
-  import type { Activity } from "../types/Activity"
+  import type { ActivityRead } from "../types/Activity"
   import { Button } from "@/components/ui/button"
   
   type ActivityListProps = {
-    activities: Activity[]
+    activities: ActivityRead[]
   }
   
   function ActivityList({ activities }: ActivityListProps) {
@@ -39,7 +39,7 @@ import {
             activities.map((a) => (
               <TableRow key={a.id}>
                 <TableCell>{a.start_time}–{a.end_time}</TableCell>
-                <TableCell>{a.category}</TableCell>
+                <TableCell>{a.category.name}</TableCell>
                 <TableCell>{a.mood}</TableCell>
                 <TableCell>{a.energy_level}</TableCell>
                 <TableCell className="text-right">

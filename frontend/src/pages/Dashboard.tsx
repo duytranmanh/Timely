@@ -3,7 +3,7 @@ import ActivityForm from "@/components/ActivityForm"
 import ActivityList from "@/components/ActivityList"
 import Navbar from "@/components/NavBar"
 import DateSelector from "@/components/DateSelector"
-import type { Activity } from "@/types/Activity"
+import type { ActivityRead } from "@/types/Activity"
 import type { ChartConfig } from "@/components/ui/chart"
 import TimeUsagePanel from "@/components/TimeUsagePanel"
 import CategoryTrendPanel from "@/components/CategoryTrendPanel"
@@ -12,7 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 function Dashboard() {
   const [date, setDate] = useState<Date>(new Date())
-  const [activities, setActivities] = useState<Activity[]>([])
+  const [activities, setActivities] = useState<ActivityRead[]>([])
 
   // Simulate report fetching
   function simulateReportFetch(type: string): Promise<{
@@ -118,7 +118,7 @@ function Dashboard() {
 
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/3">
-            <ActivityForm date={date} setActivities={setActivities}/>
+            <ActivityForm date={date} activities={activities} setActivities={setActivities}/>
           </div>
           <div className="w-full md:w-2/3">
             <Card className="h-full">

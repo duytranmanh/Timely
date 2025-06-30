@@ -1,5 +1,3 @@
-// components/ComboBox/CategoryComboBox.tsx
-import * as React from "react"
 import { BaseComboBox, type ComboOption } from "./BaseComboBox"
 import { cn } from "@/lib/utils"
 import {
@@ -12,11 +10,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react"
 
 type CategoryComboBoxProps = {
     options: ComboOption[]
-    value: string
-    onChange: (val: string) => void
+    value: ComboOption | null
+    onChange: (val: ComboOption) => void
     className?: string
 }
 
@@ -26,10 +25,10 @@ export function CategoryComboBox({
     onChange,
     className,
 }: CategoryComboBoxProps) {
-    const [dialogOpen, setDialogOpen] = React.useState(false)
-    const [customValue, setCustomValue] = React.useState("")
-    const [customColor, setCustomColor] = React.useState("#F87171")
-    const [customDescription, setCustomDescription] = React.useState("")
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [customValue, setCustomValue] = useState("")
+    const [customColor, setCustomColor] = useState("#F87171")
+    const [customDescription, setCustomDescription] = useState("")
 
     const presetColors = [
         "#F87171", // red
@@ -42,7 +41,7 @@ export function CategoryComboBox({
     const handleAddCustom = () => {
         if (!customValue.trim()) return
         // TODO: Send POST to backend
-        onChange(customValue)
+        // onChange(customValue)
         setDialogOpen(false)
         setCustomValue("")
         setCustomColor("#F87171")
@@ -56,10 +55,13 @@ export function CategoryComboBox({
                     ...options,
                     { value: "__add_new__", label: "Add custom category" },
                 ]}
-                value={value}
+                value={value?.value || ""}
                 onChange={(val) => {
                     if (val === "__add_new__") setDialogOpen(true)
-                    else onChange(val)
+                    else {
+                        const selected = options.find(opt => opt.value === val)
+                        if (selected) onChange(selected)
+                      }
                 }}
                 placeholder="Category"
                 className={className}
