@@ -13,11 +13,25 @@ class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
 
+    from datetime import date
+
+
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
-            return Activity.objects.all()
-        return Activity.objects.filter(author=user)
+
+        # Base queryset: all activities by user (or all if staff)
+        queryset = (
+            Activity.objects.all()
+            if user.is_staff
+            else Activity.objects.filter(author=user)
+        )
+
+        # Optional filter by ?date=YYYY-MM-DD
+        date_str = self.request.query_params.get("date")
+        if date_str:
+            queryset = queryset.filter(start_time__date=date_str)
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -27,6 +41,7 @@ class MoodChoicesView(APIView):
     """
     Returns available moods in activities for selection
     """
+
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
