@@ -79,7 +79,7 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
       setErrorMessage("Please select a mood.")
       setErrorAlert(true)
       return
-    } 
+    }
 
     // CHECK IF TIME RANGE IS VALID
     if (!isTimeRangeValid(startTime, endTime)) {
@@ -129,8 +129,13 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
 
     const created = await response.json()
 
-    // UPDATE ACTIVITIES LIST IMMEDIATELY
-    setActivities(prev => [...prev, created])
+    // UPDATE ACTIVITIES LIST AND SORT IMMEDIATELY
+    setActivities(prev =>
+      [...prev, created].sort((a, b) =>
+        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+      )
+    )
+
     console.log("Activity created:", created)
 
     // SUCCESS ALERT

@@ -6,15 +6,13 @@ from rest_framework.views import APIView
 from activities.models import Activity
 from .serializers import ActivitySerializer
 from rest_framework.response import Response
+from datetime import date
 
 
 # Create your views here.
 class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
-
-    from datetime import date
-
 
     def get_queryset(self):
         user = self.request.user
@@ -31,7 +29,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
         if date_str:
             queryset = queryset.filter(start_time__date=date_str)
 
-        return queryset
+        return queryset.order_by("start_time")
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

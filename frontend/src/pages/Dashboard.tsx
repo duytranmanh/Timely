@@ -9,8 +9,11 @@ import TimeUsagePanel from "@/components/TimeUsagePanel"
 import CategoryTrendPanel from "@/components/CategoryTrendPanel"
 import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { authFetch } from "@/lib/authFetch"
 
 function Dashboard() {
+  const API_URL = import.meta.env.VITE_BACKEND_URL
+
   const [date, setDate] = useState<Date>(new Date())
   const [activities, setActivities] = useState<ActivityRead[]>([])
 
@@ -56,49 +59,31 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    // Replace with real fetch later
-    setActivities([
-      {
-        id: 1,
-        start_time: "08:00",
-        end_time: "09:00",
-        category: "Exercise",
-        mood: "Refreshed",
-        energy_level: 7,
-      },
-      {
-        id: 2,
-        start_time: "09:30",
-        end_time: "11:00",
-        category: "Study",
-        mood: "Focused",
-        energy_level: 6,
-      },
-      {
-        id: 3,
-        start_time: "11:15",
-        end_time: "12:00",
-        category: "Social",
-        mood: "Uplifted",
-        energy_level: 8,
-      },
-      {
-        id: 4,
-        start_time: "13:00",
-        end_time: "15:00",
-        category: "Work",
-        mood: "Drained",
-        energy_level: 4,
-      },
-      {
-        id: 5,
-        start_time: "16:00",
-        end_time: "17:30",
-        category: "Reading",
-        mood: "Calm",
-        energy_level: 6,
-      },
-    ])
+    async function fetchActivities(date: Date) {
+      try {
+        // EXTRACT JUST THE DAY FROM DATE
+        const isoDate = date.toISOString().split("T")[0]
+        // SEND REQUEST TO BACKEND
+        const res = await authFetch(
+          `${API_URL}/activities/?date=${isoDate}`
+        )
+
+        // RESPONSE STATUS CHECK
+        if (!res.ok) {
+          console.warn("Error fetching activities")
+          return
+        }
+
+        // SET DATA
+        const activitiesData = await res.json()
+        setActivities(activitiesData)
+      }
+      catch (err) {
+        console.error("Error fetching activities:", err)
+      }
+    }
+
+    fetchActivities(date)
   }, [date])
 
   return (
@@ -118,7 +103,7 @@ function Dashboard() {
 
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/3">
-            <ActivityForm date={date} activities={activities} setActivities={setActivities}/>
+            <ActivityForm date={date} activities={activities} setActivities={setActivities} />
           </div>
           <div className="w-full md:w-2/3">
             <Card className="h-full">

@@ -30,6 +30,17 @@ class ActivitySerializer(serializers.ModelSerializer):
             "mood",
         ]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Replace mood string with object
+        data["mood"] = {
+            "value": instance.mood,
+            "label": instance.get_mood_display()
+        }
+
+        return data
+
     def validate(self, data):
         author = self.context["request"].user
         start = data["start_time"]

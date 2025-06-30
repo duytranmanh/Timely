@@ -72,15 +72,15 @@ export function CategoryComboBox({
 
 
     const handleAddCustom = async () => {
-        // TODO: FIELD VALIDATION
-        // TODO: CHECK NAME
+        // FIELD VALIDATION
+        // NAME CHECK
         if (!customValue.trim()) {
             setErrorMessage("Please enter a name for your category")
             setErrorAlert(true)
             return
         }
 
-        // TODO: CHECK COLOR
+        // COLOR CHECK
         if (!customColor) {
             setErrorMessage("Please select a color for your category")
             setErrorAlert(true)
@@ -131,6 +131,7 @@ export function CategoryComboBox({
             setCustomColor("#F87171")
             setCustomDescription("")
         } catch (err) {
+            // CATCHING UNDEFINED ERRORS
             console.error("Error creating category:", err)
             setErrorMessage("Something went wrong. Please try again.")
             setErrorAlert(true)

@@ -2,8 +2,8 @@
 /**
  * Wrapper for fetch
  * Automatically send refresh request if access token is expired
- * @param requestUrl url of the request
- * @param requestOptions header
+ * @param requestUrl Url of the request
+ * @param requestOptions Request header, {} by default
  * @param hasRetried has the request been retried, false by default
  * @returns a Promise
  */

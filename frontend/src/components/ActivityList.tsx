@@ -9,16 +9,20 @@ import {
   import { Trash } from "lucide-react"
   import type { ActivityRead } from "../types/Activity"
   import { Button } from "@/components/ui/button"
+import { formatTime } from "@/lib/utils"
   
   type ActivityListProps = {
     activities: ActivityRead[]
   }
   
   function ActivityList({ activities }: ActivityListProps) {
+
+
     const handleDelete = (id: number) => {
       if (!id) {
         console.log("activity isnt available")
       }
+
       console.log("Delete activity with id:", id)
       // TODO: call delete API and refresh list
     }
@@ -38,9 +42,9 @@ import {
           {activities && activities.length > 0 ? (
             activities.map((a) => (
               <TableRow key={a.id}>
-                <TableCell>{a.start_time}–{a.end_time}</TableCell>
+                <TableCell>{formatTime(a.start_time)} – {formatTime(a.end_time)}</TableCell>
                 <TableCell>{a.category.name}</TableCell>
-                <TableCell>{a.mood}</TableCell>
+                <TableCell>{a.mood.label}</TableCell>
                 <TableCell>{a.energy_level}</TableCell>
                 <TableCell className="text-right">
                   <Button
