@@ -10,10 +10,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
+import { useState, type SetStateAction, type Dispatch } from "react"
+import { authFetch } from "@/lib/authFetch"
+import type { CategoryCreate } from "@/types/Category"
+import { PopupAlert } from "../PopupAlert"
 
 type CategoryComboBoxProps = {
     options: ComboOption[]
+    setOptions: Dispatch<SetStateAction<ComboOption[]>>
     value: ComboOption | null
     onChange: (val: ComboOption) => void
     className?: string
@@ -21,31 +25,117 @@ type CategoryComboBoxProps = {
 
 export function CategoryComboBox({
     options,
+    setOptions,
     value,
     onChange,
     className,
 }: CategoryComboBoxProps) {
+    const API_URL = import.meta.env.VITE_BACKEND_URL
+
+    // Open/Close state of Pop-up
     const [dialogOpen, setDialogOpen] = useState(false)
+
+    // Form fields
     const [customValue, setCustomValue] = useState("")
     const [customColor, setCustomColor] = useState("#F87171")
     const [customDescription, setCustomDescription] = useState("")
 
+    // Error Alert
+    const [errorMessage, setErrorMessage] = useState("")
+    const [errorAlert, setErrorAlert] = useState(false)
+
+    // Success Alert
+    const [successAlert, setSuccessAlert] = useState(false)
+
+
     const presetColors = [
-        "#F87171", // red
-        "#FBBF24", // yellow
-        "#34D399", // green
-        "#60A5FA", // blue
-        "#A78BFA", // purple
+        "#F87171", // red-400
+        "#FB923C", // orange-400
+        "#FACC15", // yellow-400
+        "#4ADE80", // green-400
+        "#22D3EE", // cyan-400
+        "#60A5FA", // blue-400
+        "#818CF8", // indigo-400
+        "#A78BFA", // violet-400
+        "#F472B6", // pink-400
+        "#94A3B8", // slate-400
+        "#FCD34D", // amber-300
+        "#34D399", // emerald-400
+        "#67E8F9", // sky-300
+        "#C084FC", // purple-400
+        "#FCA5A5", // rose-300
+        "#FBCFE8", // pink-200 (light)
+        "#E879F9", // fuchsia-400
+        "#D8B4FE", // purple-300
+        "#93C5FD", // blue-300
     ]
 
-    const handleAddCustom = () => {
-        if (!customValue.trim()) return
-        // TODO: Send POST to backend
-        // onChange(customValue)
-        setDialogOpen(false)
-        setCustomValue("")
-        setCustomColor("#F87171")
-        setCustomDescription("")
+
+    const handleAddCustom = async () => {
+        // TODO: FIELD VALIDATION
+        // TODO: CHECK NAME
+        if (!customValue.trim()) {
+            setErrorMessage("Please enter a name for your category")
+            setErrorAlert(true)
+            return
+        }
+
+        // TODO: CHECK COLOR
+        if (!customColor) {
+            setErrorMessage("Please select a color for your category")
+            setErrorAlert(true)
+            return
+        }
+
+        // CREATE CONTENT OBJECT
+        const content: CategoryCreate = {
+            name: customValue,
+            is_default: false,
+            color: customColor,
+            description: customDescription
+        }
+
+        try {
+            // SEND REQUEST TO BACKEND
+            const res = await authFetch(`${API_URL}/categories/`, {
+                method: "POST",
+                body: JSON.stringify(content),
+            })
+
+            // RESPONSE STATUS CHECK
+            if (!res.ok) {
+                const errorData = await res.json()
+                setErrorMessage(errorData?.detail || "Failed to create category.")
+                setErrorAlert(true)
+                return
+            }
+
+            // PARSE THE NEW CATEGORY
+            const createdCategory = await res.json()
+
+            const newOption: ComboOption = {
+                value: createdCategory.id.toString(),
+                label: createdCategory.name,
+            }
+
+            // ADD CATEGORY TO LIST
+            setOptions(prev => [...prev, newOption])
+            onChange(newOption)
+
+            // SUCCESS FEEDBACK
+            setSuccessAlert(true)
+
+            // RESET THE FORM
+            setDialogOpen(false)
+            setCustomValue("")
+            setCustomColor("#F87171")
+            setCustomDescription("")
+        } catch (err) {
+            console.error("Error creating category:", err)
+            setErrorMessage("Something went wrong. Please try again.")
+            setErrorAlert(true)
+            return
+        }
     }
 
     return (
@@ -61,7 +151,7 @@ export function CategoryComboBox({
                     else {
                         const selected = options.find(opt => opt.value === val)
                         if (selected) onChange(selected)
-                      }
+                    }
                 }}
                 placeholder="Category"
                 className={className}
@@ -114,6 +204,19 @@ export function CategoryComboBox({
                     </div>
                 </DialogContent>
             </Dialog>
+            <PopupAlert
+            open={errorAlert}
+            onOpenChange={setErrorAlert}
+            description={errorMessage}
+            title="Invalid Information"
+            />
+
+            <PopupAlert
+            open={successAlert}
+            onOpenChange={setSuccessAlert}
+            title="Category Created"
+            description={`${customValue} has been created successfully!`}
+            />
         </>
     )
 }

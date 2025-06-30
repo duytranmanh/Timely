@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type SetStateAction, type Dispatch } from "react"
 import { Slider } from "./ui/slider"
 import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"
@@ -14,7 +14,7 @@ import { hasOverlap, isTimeRangeValid } from "@/lib/validation"
 type ActivityFormProps = {
   date: Date,
   activities: ActivityRead[],
-  setActivities: React.Dispatch<React.SetStateAction<ActivityRead[]>>
+  setActivities: Dispatch<SetStateAction<ActivityRead[]>>
 }
 
 /**
@@ -188,6 +188,7 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
         {/* CATEGORY SELECTION */}
         <CategoryComboBox
           options={categoryOptions}
+          setOptions={setCategoryOptions}
           value={category}
           onChange={setCategory}
           className="w-full"

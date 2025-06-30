@@ -1,4 +1,4 @@
-import type { Category } from "./Category"
+import type { CategoryRead } from "./Category"
 
 export type ActivityBase = {
     notes?: string,
@@ -14,5 +14,5 @@ export type ActivityCreate = ActivityBase & {
 
 export type ActivityRead = ActivityBase & {
     id: number
-    category: Category
+    category: CategoryRead
 }
