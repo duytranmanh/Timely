@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from datetime import date
 
 
-# Create your views here.
+# TODO: time zone
 class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
