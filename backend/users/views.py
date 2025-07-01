@@ -1,24 +1,25 @@
-from django.shortcuts import render
+from django.conf import settings
+from django.contrib.auth.models import User
+from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.conf import settings
-from django.http import JsonResponse
 
 from .serializers import RegisterSerializer, UserSerializer
-from django.contrib.auth.models import User
 
-# Create your views here.
+
 class RegisterView(CreateAPIView):
     """
-    Register a new user
+    Register a new user.
     """
     serializer_class = RegisterSerializer
     queryset = User.objects.all()
 
+
 class MeView(RetrieveAPIView):
     """
-    Return current user's details'
+    Return current logged-in user info.
     """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -26,13 +27,19 @@ class MeView(RetrieveAPIView):
     def get_object(self):
         return self.request.user
 
+
 class CookieTokenObtainPairView(TokenObtainPairView):
+    """
+    Obtain JWT tokens and set them as HttpOnly cookies.
+    """
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            access = response.data['access']
-            refresh = response.data['refresh']
 
+        if response.status_code == 200:
+            access = response.data["access"]
+            refresh = response.data["refresh"]
+
+            # Set cookies
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=access,
@@ -50,38 +57,69 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
             )
 
-            # Optional: remove tokens from response body
-            del response.data["access"]
-            del response.data["refresh"]
+            # Remove tokens from body
+            response.data.pop("access", None)
+            response.data.pop("refresh", None)
 
         return response
 
 
 class CookieTokenRefreshView(TokenRefreshView):
+    """
+    Refresh access token from HttpOnly refresh cookie.
+    """
     def post(self, request, *args, **kwargs):
-        # Read refresh token from cookie
         request.data["refresh"] = request.COOKIES.get(
             settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"]
         )
 
-        # Call the base class to get the new tokens
-        response = super().post(request, *args, **kwargs)
+        original_response = super().post(request, *args, **kwargs)
 
-        # If the refresh was successful, set the new access token cookie
-        if response.status_code == 200:
-            access = response.data.get("access")
+        if original_response.status_code == 200:
+            access = original_response.data.get("access")
 
-            res = JsonResponse({}, status=200)
-            res.set_cookie(
+            # Use DRF's Response instead of JsonResponse for consistency
+            response = Response({"detail": "Token refreshed"}, status=200)
+            response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=access,
-                expires=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
                 httponly=True,
                 secure=settings.SIMPLE_JWT.get("AUTH_COOKIE_SECURE", False),
                 samesite=settings.SIMPLE_JWT.get("AUTH_COOKIE_SAMESITE", "Lax"),
                 path="/",
             )
+            return response
 
-            return res
+        return original_response
+
+
+class LogoutView(APIView):
+    """
+    Log out by clearing HttpOnly JWT cookies.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        response = Response({"message": "Logged out successfully"}, status=200)
+
+        # Expire cookies
+        response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value="",
+            expires=0,
+            path="/",
+            httponly=True,
+            secure=settings.SIMPLE_JWT.get("AUTH_COOKIE_SECURE", False),
+            samesite=settings.SIMPLE_JWT.get("AUTH_COOKIE_SAMESITE", "Lax"),
+        )
+        response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
+            value="",
+            expires=0,
+            path="/",
+            httponly=True,
+            secure=settings.SIMPLE_JWT.get("AUTH_COOKIE_SECURE", False),
+            samesite=settings.SIMPLE_JWT.get("AUTH_COOKIE_SAMESITE", "Lax"),
+        )
 
         return response
