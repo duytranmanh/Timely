@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PopupAlert } from "@/components/PopupAlert"
 
 export function LoginForm({
   className,
@@ -19,6 +20,8 @@ export function LoginForm({
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [errorAlert, setErrorAlert] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +39,9 @@ export function LoginForm({
       localStorage.setItem("refresh", data.refresh)
       navigate("/")
     } else {
-      alert("Login failed. Check credentials.")
+      const err = await res.json()
+      setErrorMessage(err?.detail || "Login failed. Check credentials.")
+      setErrorAlert(true)
     }
   }
 
@@ -96,6 +101,14 @@ export function LoginForm({
           </form>
         </CardContent>
       </Card>
+
+      {/* Error Alert */}
+      <PopupAlert
+        open={errorAlert}
+        onOpenChange={setErrorAlert}
+        title="Login Failed"
+        description={errorMessage}
+      />
     </div>
   )
 }

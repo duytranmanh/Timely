@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,23 +12,39 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-// TODO: handle logic
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate()
+
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+
     if (password !== confirmPassword) {
       setError("Passwords do not match")
       return
     }
-    setError("")
-    // Submit logic here
+
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/register/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+      credentials: "include"
+    })
+
+    if (res.ok) {
+      navigate("/login")
+    } else {
+      const data = await res.json()
+      setError(data?.detail || "Signup failed. Please try again.")
+    }
   }
 
   return (
@@ -49,6 +66,8 @@ export function SignupForm({
                   type="text"
                   placeholder="yourusername"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
@@ -58,6 +77,8 @@ export function SignupForm({
                   type="email"
                   placeholder="you@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
