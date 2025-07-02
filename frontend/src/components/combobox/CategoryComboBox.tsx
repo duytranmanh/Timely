@@ -102,6 +102,8 @@ export function CategoryComboBox({
                 body: JSON.stringify(content),
             })
 
+            console.log("here")
+
             // RESPONSE STATUS CHECK
             if (!res.ok) {
                 const errorData = await res.json()
@@ -216,7 +218,7 @@ export function CategoryComboBox({
             open={successAlert}
             onOpenChange={setSuccessAlert}
             title="Category Created"
-            description={`${customValue} has been created successfully!`}
+            description={`Category has been created successfully!`}
             />
         </>
     )
