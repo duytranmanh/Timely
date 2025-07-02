@@ -16,6 +16,7 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const API_URL = import.meta.env.VITE_BACKEND_URL
   const navigate = useNavigate()
 
   const [username, setUsername] = useState("")
@@ -32,7 +33,7 @@ export function SignupForm({
       return
     }
 
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/register/`, {
+    const res = await fetch(`${API_URL}/users/register/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),
