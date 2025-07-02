@@ -61,7 +61,7 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
   }
 
   /**
-   * handle submission for Activity Form
+   * Handle submission for Activity Form
    * @param e 
    * @returns 
    */

@@ -1,33 +1,75 @@
 import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableRow,
-    TableHead,
-    TableCell,
-  } from "@/components/ui/table"
-  import { Trash } from "lucide-react"
-  import type { ActivityRead } from "../types/Activity"
-  import { Button } from "@/components/ui/button"
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table"
+import { Trash } from "lucide-react"
+import type { ActivityRead } from "../types/Activity"
+import { Button } from "@/components/ui/button"
 import { formatTime } from "@/lib/utils"
-  
-  type ActivityListProps = {
-    activities: ActivityRead[]
-  }
-  
-  function ActivityList({ activities }: ActivityListProps) {
+import { authFetch } from "@/lib/authFetch"
+import { useState, type Dispatch, type SetStateAction } from "react"
+import { PopupAlert } from "./PopupAlert"
 
+type ActivityListProps = {
+  activities: ActivityRead[],
+  setActivities: Dispatch<SetStateAction<ActivityRead[]>>
+}
 
-    const handleDelete = (id: number) => {
-      if (!id) {
-        console.log("activity isnt available")
+function ActivityList({setActivities, activities }: ActivityListProps) {
+  const API_URL = import.meta.env.VITE_BACKEND_URL
+
+  // Error Pop-Up
+  const [errorAlert, setErrorAlert] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+
+  // Success Alert
+  const [successAlert, setSuccessAlert] = useState(false)
+
+  const handleDelete = async (id: number) => {
+    // TODO: VALIDATION
+    if (!id) {
+      console.log("Activity id not valid")
+    }
+
+    // HANDLE DELETION
+    try {
+      // SEND DELETE REQUEST
+      const res = await authFetch(
+        `${API_URL}/activities/${id}/`,
+        {
+          method: "DELETE"
+        }
+      )
+
+      // RESPONSE STATUS CHECK
+      if (!res.ok) {
+        try {
+          const errorData = await res.json()
+          setErrorMessage(errorData?.detail || "Something went wrong.")
+        } catch (err) {
+          setErrorMessage("An unknown error occurred.")
+        }
+        setErrorAlert(true)
+        return
       }
 
-      console.log("Delete activity with id:", id)
-      // TODO: call delete API and refresh list
+      // REMOVE ACTIVITY FROM ACTIVITY LIST IMMEDIATELY
+      setActivities((prev) => prev.filter((activity) => activity.id !== id))
+
+      // Pop-Up Alert
+      setSuccessAlert(true)
     }
-  
-    return (
+    catch (err) {
+      console.log("Error deleting Activity", err)
+    }
+  }
+
+  return (
+    <>
       <Table>
         <TableHeader>
           <TableRow>
@@ -67,8 +109,23 @@ import { formatTime } from "@/lib/utils"
           )}
         </TableBody>
       </Table>
-    )
-  }
-  
-  export default ActivityList
-  
+      {/* SUCCESS POP-UP ALERT */}
+      <PopupAlert
+        open={successAlert}
+        onOpenChange={setSuccessAlert}
+        title="Activity Deleted"
+        description="The activity has been successfully removed."
+      />
+
+      {/* ERROR POP-UP ALERT */}
+      <PopupAlert
+        open={errorAlert}
+        onOpenChange={setErrorAlert}
+        title="Delete Failed"
+        description={errorMessage}
+      />
+    </>
+  )
+}
+
+export default ActivityList

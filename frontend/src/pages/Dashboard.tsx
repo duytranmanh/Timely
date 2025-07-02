@@ -111,7 +111,9 @@ function Dashboard() {
                 <CardTitle>Logged Activities</CardTitle>
               </CardHeader>
               <CardContent>
-                <ActivityList activities={activities} />
+                <ActivityList
+                setActivities={setActivities}
+                activities={activities} />
               </CardContent>
             </Card>
           </div>

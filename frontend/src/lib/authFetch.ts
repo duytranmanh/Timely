@@ -38,11 +38,10 @@ export async function authFetch(
     })
 
     if (refreshResponse.ok) {
-      const data = await refreshResponse.json()
-      localStorage.setItem("access", data.access)
 
       // Retry the original request with new cookies
       return authFetch(requestUrl, requestOptions, true)
+      
     } else {
       // Refresh token is invalid or expired — log out user
       localStorage.clear()
