@@ -17,19 +17,31 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import type { ActivityRead } from "@/types/Activity"
+import { formatTime } from "@/lib/utils"
 
-const stubData = [
-  { hour: "06:00", energy: 30 },
-  { hour: "08:00", energy: 50 },
-  { hour: "10:00", energy: 65 },
-  { hour: "12:00", energy: 55 },
-  { hour: "14:00", energy: 40 },
-  { hour: "16:00", energy: 45 },
-  { hour: "18:00", energy: 60 },
-  { hour: "20:00", energy: 50 },
-  { hour: "22:00", energy: 35 },
-]
+type EnergyCircadianPanelProps = {
+  activities: ActivityRead[]
+}
 
+function formatHourOnly(dateStr: string): string {
+  const date = new Date(dateStr)
+  const hour = date.getHours().toString().padStart(2, "0")
+  return `${hour}:00`
+}
+
+
+// Helper: generate full range of hour keys
+function generateHourKeys(start = 6, end = 22): string[] {
+  const hours: string[] = []
+  for (let h = start; h <= end; h++) {
+    const hour = h.toString().padStart(2, "0") + ":00"
+    hours.push(hour)
+  }
+  return hours
+}
+
+// Chart config
 const chartConfig: ChartConfig = {
   energy: {
     label: "Energy Level",
@@ -37,7 +49,31 @@ const chartConfig: ChartConfig = {
   },
 }
 
-export default function EnergyCircadianPanel() {
+export default function EnergyCircadianPanel({ activities }: EnergyCircadianPanelProps) {
+  // Group energy levels by formatted hour
+  const energyByHour = new Map<string, number[]>()
+
+  activities.forEach((a) => {
+    const hourKey = formatHourOnly(a.start_time)
+    if (!energyByHour.has(hourKey)) {
+      energyByHour.set(hourKey, [])
+    }
+    energyByHour.get(hourKey)!.push(a.energy_level)
+  })
+
+  // Generate chart data with all hours from 06:00 to 22:00
+  const allHours = generateHourKeys(0, 23)
+
+  const chartData = allHours.map((hour) => {
+    const energies = energyByHour.get(hour)
+    return {
+      hour,
+      energy: energies
+        ? Math.round((energies.reduce((sum, e) => sum + e, 0) / energies.length) * 10) / 10
+        : null,
+    }
+  })
+
   return (
     <Card className="w-full md:w-1/2 lg:w-1/3">
       <CardHeader>
@@ -46,7 +82,7 @@ export default function EnergyCircadianPanel() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart data={stubData} margin={{ left: 12, right: 12 }}>
+          <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="hour"
@@ -64,6 +100,8 @@ export default function EnergyCircadianPanel() {
               stroke="var(--chart-1)"
               strokeWidth={2}
               dot={false}
+              connectNulls={true} // Show gaps where data is missing
+              isAnimationActive={false}
             />
           </LineChart>
         </ChartContainer>

@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { TrendingUp } from "lucide-react"
-import { Legend, Pie, PieChart } from "recharts"
+import { Pie, PieChart } from "recharts"
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card"

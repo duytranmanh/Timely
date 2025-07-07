@@ -4,7 +4,6 @@ import ActivityList from "@/components/ActivityList"
 import Navbar from "@/components/NavBar"
 import DateSelector from "@/components/DateSelector"
 import type { ActivityRead } from "@/types/Activity"
-import type { ChartConfig } from "@/components/ui/chart"
 import TimeUsagePanel from "@/components/TimeUsagePanel"
 import CategoryTrendPanel from "@/components/CategoryTrendPanel"
 import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
@@ -106,7 +105,7 @@ function Dashboard() {
           {/* TODO: all of these panels depends on activities, if activities changes, they all refresh */}
           <TimeUsagePanel date={date} refresh={refresh} />
           <CategoryTrendPanel />
-          <EnergyCircadianPanel />
+          <EnergyCircadianPanel activities={activities} />
         </div>
       </div>
     </>
