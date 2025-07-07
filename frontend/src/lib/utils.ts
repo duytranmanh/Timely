@@ -16,3 +16,16 @@ export function formatTime(date: string): string {
 
   return `${format.format(dateIso)}`
 }
+
+export const getColorForCategory = (() => {
+  const assigned = new Map<string, string>()
+  const chartCount = 8
+
+  return (name: string) => {
+    if (assigned.has(name)) return assigned.get(name)!
+    const index = assigned.size % chartCount
+    const color = `var(--chart-${index + 1})`
+    assigned.set(name, color)
+    return color
+  }
+})()

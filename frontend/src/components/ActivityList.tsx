@@ -30,9 +30,9 @@ function ActivityList({setActivities, activities }: ActivityListProps) {
   const [successAlert, setSuccessAlert] = useState(false)
 
   const handleDelete = async (id: number) => {
-    // TODO: VALIDATION
+    // VALIDATION
     if (!id) {
-      console.log("Activity id not valid")
+      console.warn("Activity id not valid for deletion")
     }
 
     // HANDLE DELETION
@@ -60,7 +60,7 @@ function ActivityList({setActivities, activities }: ActivityListProps) {
       // REMOVE ACTIVITY FROM ACTIVITY LIST IMMEDIATELY
       setActivities((prev) => prev.filter((activity) => activity.id !== id))
 
-      // Pop-Up Alert
+      // POPUP ALERT
       setSuccessAlert(true)
     }
     catch (err) {

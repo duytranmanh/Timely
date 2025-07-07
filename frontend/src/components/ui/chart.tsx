@@ -84,13 +84,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
-  })
-  .join("\n")}
+                .map(([key, itemConfig]) => {
+                  const color =
+                    itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+                    itemConfig.color
+                  return color ? `  --color-${key}: ${color};` : null
+                })
+                .join("\n")}
 }
 `
           )
@@ -224,8 +224,7 @@ function ChartTooltipContent({
                       nestLabel ? "items-end" : "items-center"
                     )}
                   >
-                    <div className="grid gap-1.5">
-                      {nestLabel ? tooltipLabel : null}
+                    <div className="grid gap-1.5 min-w-[6rem]">
                       <span className="text-muted-foreground">
                         {itemConfig?.label || item.name}
                       </span>
@@ -233,7 +232,10 @@ function ChartTooltipContent({
                     {item.value && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
                         {item.value.toLocaleString()}
+                        {item.dataKey && config?.[item.dataKey]?.label ? ` ${config[item.dataKey].label}` : ""}
+                        {item.payload?.hours ? ` (${item.payload.hours} hrs)` : ""}
                       </span>
+
                     )}
                   </div>
                 </>
@@ -314,8 +316,8 @@ function getPayloadConfigFromPayload(
 
   const payloadPayload =
     "payload" in payload &&
-    typeof payload.payload === "object" &&
-    payload.payload !== null
+      typeof payload.payload === "object" &&
+      payload.payload !== null
       ? payload.payload
       : undefined
 

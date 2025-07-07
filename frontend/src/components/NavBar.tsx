@@ -14,7 +14,7 @@ export function Navbar() {
     try {
       const res = await fetch(`${API_URL}/users/logout/`, {
         method: "POST",
-        credentials: "include", // Important to include cookies
+        credentials: "include",
       })
 
       if (res.ok) {

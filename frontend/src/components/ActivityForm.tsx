@@ -136,8 +136,6 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
       )
     )
 
-    console.log("Activity created:", created)
-
     // SUCCESS ALERT
     setSuccessAlert(true)
   }
