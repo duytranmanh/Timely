@@ -100,7 +100,7 @@ export default function EnergyCircadianPanel({ activities }: EnergyCircadianPane
               stroke="var(--chart-1)"
               strokeWidth={2}
               dot={false}
-              connectNulls={true} // Show gaps where data is missing
+              connectNulls={true}
               isAnimationActive={false}
             />
           </LineChart>

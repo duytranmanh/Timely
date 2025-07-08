@@ -69,7 +69,7 @@ export function BaseComboBox({
               {normalOptions.map((o) => (
                 <CommandItem
                   key={o.value}
-                  value={o.value}
+                  value={o.label.toLocaleLowerCase()}
                   onSelect={() => {
                     onChange(o.value)
                     setOpen(false)

@@ -14,7 +14,10 @@ import { hasOverlap, isTimeRangeValid } from "@/lib/validation"
 type ActivityFormProps = {
   date: Date,
   activities: ActivityRead[],
-  setActivities: Dispatch<SetStateAction<ActivityRead[]>>
+  setActivities: Dispatch<SetStateAction<ActivityRead[]>>,
+  moodOptions: ComboOption[],
+  categoryOptions: ComboOption[],
+  setCategoryOptions: Dispatch<SetStateAction<ComboOption[]>>
 }
 
 /**
@@ -22,23 +25,23 @@ type ActivityFormProps = {
  * @param date Activity date
  * @param activities List of logged activities date from that day
  * @param setActivities Set state for activities
+ * @param moodOptions mood options for drop down selection
+ * @param categoryOptions contains category options for selection
+ * @param setCategoryOptions set state for categories options
  * @returns 
  */
-function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
+function ActivityForm({ date, activities, setActivities, moodOptions, categoryOptions, setCategoryOptions }: ActivityFormProps) {
 
   // Api url is saved as a environment variable
   const API_URL = import.meta.env.VITE_BACKEND_URL
-
+  
+  // Activity Form fields
   const [category, setCategory] = useState<ComboOption | null>(null)
   const [mood, setMood] = useState("")
   const [energy, setEnergy] = useState(5)
   const [startTime, setStartTime] = useState("10:30")
   const [endTime, setEndTime] = useState("12:30")
   const [notes, setNotes] = useState("")
-
-  // Contains categories and moods for drop down
-  const [categoryOptions, setCategoryOptions] = useState<ComboOption[]>([])
-  const [moodOptions, setMoodOptions] = useState<ComboOption[]>([])
 
   // Log successful alert
   const [successAlert, setSuccessAlert] = useState(false)
@@ -139,48 +142,6 @@ function ActivityForm({ date, activities, setActivities }: ActivityFormProps) {
     // SUCCESS ALERT
     setSuccessAlert(true)
   }
-
-  useEffect(() => {
-    /**
-     * Fetch Category and Mood from Backend, populate list accordingly
-     */
-    async function fetchCategoryAndMoodOptions() {
-      try {
-        const [categoryRes, moodRes] = await Promise.all([
-          authFetch(`${API_URL}/categories/`),
-          authFetch(`${API_URL}/activities/moods/`)
-        ])
-
-        // RESPONSE CHECK
-        if (categoryRes.ok && moodRes.ok) {
-          const categoryData = await categoryRes.json()
-          const moodData = await moodRes.json()
-
-          // MAP FETCHED CATEGORIES AND MOOD TO COMBO BOX OPTION FORMAT
-          setCategoryOptions(
-            categoryData.map((c: any) => ({
-              value: c.id.toString(),
-              label: c.name
-            }))
-          )
-
-          setMoodOptions(
-            moodData.map((m: any) => ({
-              value: m.value,
-              label: m.label
-            }))
-          )
-
-        } else {
-          console.warn("Failed to fetch category or mood options")
-        }
-      } catch (err) {
-        console.error("Error fetching options:", err)
-      }
-    }
-
-    fetchCategoryAndMoodOptions()
-  }, [])
 
 
   return (

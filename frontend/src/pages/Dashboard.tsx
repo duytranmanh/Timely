@@ -9,6 +9,7 @@ import CategoryTrendPanel from "@/components/CategoryTrendPanel"
 import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { authFetch } from "@/lib/authFetch"
+import type { ComboOption } from "@/components/combobox/BaseComboBox"
 
 function Dashboard() {
   const API_URL = import.meta.env.VITE_BACKEND_URL
@@ -19,13 +20,47 @@ function Dashboard() {
   // Trigger Refresh for all Reports
   const [refresh, setRefresh] = useState(0)
 
-  /**
-   * Whenever activities is changed, trigger a refresh for all reports
-   */
-  useEffect(() => {
-    setRefresh(k => k + 1)
-  }, [activities])
+  // Contains categories and moods for drop down
+  const [categoryOptions, setCategoryOptions] = useState<ComboOption[]>([])
+  const [moodOptions, setMoodOptions] = useState<ComboOption[]>([])
 
+  /**
+     * Fetch Category and Mood from Backend, populate list accordingly
+     */
+  async function fetchCategoryAndMoodOptions() {
+    try {
+      const [categoryRes, moodRes] = await Promise.all([
+        authFetch(`${API_URL}/categories/`),
+        authFetch(`${API_URL}/activities/moods/`)
+      ])
+
+      // RESPONSE CHECK
+      if (categoryRes.ok && moodRes.ok) {
+        const categoryData = await categoryRes.json()
+        const moodData = await moodRes.json()
+
+        // MAP FETCHED CATEGORIES AND MOOD TO COMBO BOX OPTION FORMAT
+        setCategoryOptions(
+          categoryData.map((c: any) => ({
+            value: c.id.toString(),
+            label: c.name
+          }))
+        )
+
+        setMoodOptions(
+          moodData.map((m: any) => ({
+            value: m.value,
+            label: m.label
+          }))
+        )
+
+      } else {
+        console.warn("Failed to fetch category or mood options")
+      }
+    } catch (err) {
+      console.error("Error fetching options:", err)
+    }
+  }
 
   /**
      * Fetch Activities upon page load or when date is change
@@ -56,9 +91,28 @@ function Dashboard() {
     }
   }
 
+
+  // Refetch everytime date is changed
   useEffect(() => {
     fetchActivities(date)
   }, [date])
+
+  // Fetch all Mood and Categories options
+  useEffect(() => {
+    fetchCategoryAndMoodOptions()
+  }, [])
+
+
+  // TODO: Reconsider set refresh
+  // if set refresh => refetch the whole page, then categories might just get refreshed again?
+  /**
+   * Whenever activities is changed, trigger a refresh for all reports
+   */
+  // useEffect(() => {
+  //   setRefresh(k => k + 1)
+  // }, [activities])
+
+
 
   return (
     <>
@@ -81,6 +135,9 @@ function Dashboard() {
               date={date}
               activities={activities}
               setActivities={setActivities}
+              moodOptions={moodOptions}
+              categoryOptions={categoryOptions}
+              setCategoryOptions={setCategoryOptions}
             />
           </div>
           <div className="w-full md:w-2/3">
@@ -103,8 +160,8 @@ function Dashboard() {
         <h2 className="text-2xl font-semibold mb-4">Insights</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
           {/* TODO: all of these panels depends on activities, if activities changes, they all refresh */}
-          <TimeUsagePanel date={date} refresh={refresh} />
-          <CategoryTrendPanel />
+          <TimeUsagePanel date={date} refresh={activities.length} />
+          <CategoryTrendPanel categoryOptions={categoryOptions}/>
           <EnergyCircadianPanel activities={activities} />
         </div>
       </div>

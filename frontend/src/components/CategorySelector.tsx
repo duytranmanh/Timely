@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
   Command,
   CommandGroup,
@@ -12,31 +11,37 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { ComboOption } from "./combobox/BaseComboBox"
 
-const CATEGORY_OPTIONS = [
-  "Study",
-  "Work",
-  "Social",
-  "Exercise",
-  "Reading",
-  "Leisure",
-]
+type CategorySelectorButtonProps = {
+  categoryOptions: ComboOption[]
+  selectedCategories: string[] // This holds .value (e.g. category IDs)
+  setSelectedCategories: (cats: string[]) => void
+  maxSelected?: number
+}
 
-export default function CategorySelectorButton() {
-  const [open, setOpen] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-
-  function toggleCategory(cat: string) {
-    setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    )
+export default function CategorySelectorButton({
+  categoryOptions,
+  selectedCategories,
+  setSelectedCategories,
+  maxSelected = 3,
+}: CategorySelectorButtonProps) {
+  const toggleCategory = (catValue: string) => {
+    const isSelected = selectedCategories.includes(catValue)
+    if (isSelected) {
+      setSelectedCategories(selectedCategories.filter((c) => c !== catValue))
+    } else if (selectedCategories.length < maxSelected) {
+      setSelectedCategories([...selectedCategories, catValue])
+    }
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="text-xs">
-          {selectedCategories.length > 0 ? `${selectedCategories.length} selected` : "Filter"}
+          {selectedCategories.length > 0
+            ? `${selectedCategories.length} selected`
+            : "Filter"}
           <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -45,20 +50,26 @@ export default function CategorySelectorButton() {
           <CommandInput placeholder="Search categories..." className="h-9" />
           <CommandList>
             <CommandGroup>
-              {CATEGORY_OPTIONS.map((cat) => (
-                <CommandItem
-                  key={cat}
-                  onSelect={() => toggleCategory(cat)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedCategories.includes(cat) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {cat}
-                </CommandItem>
-              ))}
+              {categoryOptions.map((cat) => {
+                const isSelected = selectedCategories.includes(cat.value)
+                const disableAdd = !isSelected && selectedCategories.length >= maxSelected
+
+                return (
+                  <CommandItem
+                    key={cat.value}
+                    onSelect={() => toggleCategory(cat.value)}
+                    disabled={disableAdd}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        isSelected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {cat.label}
+                  </CommandItem>
+                )
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

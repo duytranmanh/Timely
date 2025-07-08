@@ -46,7 +46,6 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
 
       // SET DATA
       const data = await res.json()
-      console.log(data)
       setData(
         data.activities.map((a: any) => ({
           activity: a.name,
@@ -54,20 +53,20 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
           fill: getColorForCategory(a.name)
         }))
       )
-      
+
       setPeriodText(data.period)
 
       const chartConfig: ChartConfig = {
-        "time spent" : { label: "Hour(s)" },
+        "time spent": { label: "Hour(s)" },
       }
-      
+
       data.activities.forEach((a: any) => {
         chartConfig[a.name] = {
           label: a.name,
           color: getColorForCategory(a.name),
         }
       })
-      
+
       setConfig(chartConfig)
 
     }
@@ -104,7 +103,10 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer config={config} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltipContent
+              indicator="line"
+              formatter={(value, name) => [`${value} hour${value !== 1 ? "s" : ""}`, name]}
+            />
             <Pie data={data} dataKey="time spent" nameKey="activity" />
           </PieChart>
         </ChartContainer>
