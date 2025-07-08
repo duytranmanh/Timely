@@ -7,9 +7,8 @@ from activities.models import Activity
 from .serializers import ActivitySerializer
 from rest_framework.response import Response
 from datetime import date
+from utils.time import get_utc_range_for_local_range
 
-
-# TODO: time zone
 class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [IsAuthenticated]
@@ -17,18 +16,28 @@ class ActivityViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        # Base queryset: all activities by user (or all if staff)
+        # BASE QUERYSET: ALL ACTIVITIES BY USER BY DEFAULT
         queryset = (
             Activity.objects.all()
+            # RETURN ALL ACTIVITIES IN DB IS USER IS STAFF
             if user.is_staff
             else Activity.objects.filter(author=user)
         )
 
-        # Optional filter by ?date=YYYY-MM-DD
+        # OPTIONAL FILTER BY DATE (YYYY-mm-dd)
         date_str = self.request.query_params.get("date")
-        if date_str:
-            queryset = queryset.filter(start_time__date=date_str)
 
+        # GET TIMEZONE FOR ACCURATE
+        tz = self.request.query_params.get("tz")
+
+        if date_str:
+            if tz:
+                start,end = get_utc_range_for_local_range(start_str=date_str,end_str=None,timezone_str=tz)
+                queryset = queryset.filter(start_time__gte=start, end_time__lte=end)
+            else:
+                queryset = queryset.filter(start_time__date= date_str)
+
+        # SORT BY START TIME
         return queryset.order_by("start_time")
 
     def perform_create(self, serializer):
