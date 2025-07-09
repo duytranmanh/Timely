@@ -3,7 +3,7 @@
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 import { TimerResetIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 
 export function Navbar() {
@@ -39,16 +39,6 @@ export function Navbar() {
         {/* Right: Menu */}
         <NavigationMenu>
           <NavigationMenuList className="flex gap-4">
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  to="/activities"
-                  className={cn("text-sm font-medium transition-colors hover:text-primary")}
-                >
-                  View Activities
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <button

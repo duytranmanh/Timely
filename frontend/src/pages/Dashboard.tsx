@@ -18,7 +18,7 @@ function Dashboard() {
   const [activities, setActivities] = useState<ActivityRead[]>([])
 
   // Trigger Refresh for all Reports
-  const [refresh, setRefresh] = useState(0)
+  // const [refresh, setRefresh] = useState(0)
 
   // Contains categories and moods for drop down
   const [categoryOptions, setCategoryOptions] = useState<ComboOption[]>([])
@@ -71,9 +71,13 @@ function Dashboard() {
     try {
       // EXTRACT JUST THE DAY FROM DATE
       const isoDate = date.toISOString().split("T")[0]
+      
+      // GET TIMEZONE
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+
       // SEND REQUEST TO BACKEND
       const res = await authFetch(
-        `${API_URL}/activities/?date=${isoDate}`
+        `${API_URL}/activities/?date=${isoDate}&tz=${tz}`
       )
 
       // RESPONSE STATUS CHECK

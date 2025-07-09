@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { TrendingUp } from "lucide-react"
 import {
   CartesianGrid, LabelList, Line, LineChart, XAxis,
 } from "recharts"

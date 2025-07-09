@@ -32,9 +32,12 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
       // PROCESS DATE
       const dateIso = date.toISOString().split("T")[0]
 
+      // GET TIMEZONE
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+
       // FETCH REPORT
       const res = await authFetch(
-        `${API_URL}/reports/${reportType}/?date=${dateIso}`
+        `${API_URL}/reports/${reportType}/?date=${dateIso}&tz=${tz}`
       )
 
       // RESPONSE STATUS CHECK
@@ -53,20 +56,20 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
           fill: getColorForCategory(a.name)
         }))
       )
-
+      
       setPeriodText(data.period)
 
       const chartConfig: ChartConfig = {
-        "time spent": { label: "Hour(s)" },
+        "time spent" : { label: "Hour(s)" },
       }
-
+      
       data.activities.forEach((a: any) => {
         chartConfig[a.name] = {
           label: a.name,
           color: getColorForCategory(a.name),
         }
       })
-
+      
       setConfig(chartConfig)
 
     }
@@ -103,10 +106,7 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer config={config} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
-            <ChartTooltipContent
-              indicator="line"
-              formatter={(value, name) => [`${value} hour${value !== 1 ? "s" : ""}`, name]}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Pie data={data} dataKey="time spent" nameKey="activity" />
           </PieChart>
         </ChartContainer>
