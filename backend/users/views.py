@@ -20,13 +20,13 @@ class RegisterView(CreateAPIView):
 
 
 class MeView(RetrieveAPIView):
-    """
-    Return current logged-in user info.
-    """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        """
+        Return current logged-in user info.
+        """
         return self.request.user
 
 
@@ -35,13 +35,16 @@ class CookieTokenObtainPairView(TokenObtainPairView):
     Obtain JWT tokens and set them as HttpOnly cookies.
     """
     def post(self, request, *args, **kwargs):
+        # CALL PARENT POST REQUEST
         response = super().post(request, *args, **kwargs)
 
+        # IF REQUEST IS SUCCESSFUL
         if response.status_code == 200:
+            # GET ACCESS AND REFRESH TOKEN FROM BODY OF RESPONSE
             access = response.data["access"]
             refresh = response.data["refresh"]
 
-            # Set cookies
+            # SET ACCESS COOKIES
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=access,
@@ -50,6 +53,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 secure=settings.SIMPLE_JWT["AUTH_COOKIE_SECURE"],
                 path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
             )
+
+            # SET REFRESH COOKIES
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
                 value=refresh,
@@ -59,7 +64,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 path=settings.SIMPLE_JWT["AUTH_COOKIE_PATH"],
             )
 
-            # Remove tokens from body
+            # REMOVE TOKENS FROM RESPONSE BODY
             response.data.pop("access", None)
             response.data.pop("refresh", None)
 
@@ -67,22 +72,27 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
-    permission_classes = [AllowAny]
     """
     Refresh access token from HttpOnly refresh cookie.
     """
+    permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
+        # ATTACH REFRESH COOKIE FROM REQUEST TO ITS BODY 
         request.data["refresh"] = request.COOKIES.get(
             settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"]
         )
 
+        # SEND REQUEST WITH REFRESH ATTACHED TO BODY TO PARENTS
         original_response = super().post(request, *args, **kwargs)
 
+        # IF REQUEST IS SUCCESSFUL
         if original_response.status_code == 200:
             access = original_response.data.get("access")
 
-            # Use DRF's Response instead of JsonResponse for consistency
             response = Response({"detail": "Token refreshed"}, status=200)
+
+            # SET NEW ACCESS TOKEN TO RESPONSE
             response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=access,
@@ -105,7 +115,7 @@ class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logged out successfully"}, status=200)
 
-        # Expire cookies
+        # EXPIRE ACCESS COOKIE
         response.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
             value="",
@@ -115,6 +125,8 @@ class LogoutView(APIView):
             secure=settings.SIMPLE_JWT.get("AUTH_COOKIE_SECURE", False),
             samesite=settings.SIMPLE_JWT.get("AUTH_COOKIE_SAMESITE", "Lax"),
         )
+
+        # EXPIRE REFRESH COOKIE
         response.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"],
             value="",

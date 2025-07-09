@@ -14,6 +14,15 @@ class ActivityViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Return activities for the current user, optionally filtered by a given date and timezone.
+
+        - If the user is staff, all activities are returned.
+        - If 'date' and 'tz' are provided in query params, filters activities that occur within
+        the full local day converted to UTC.
+        - If only 'date' is provided, all activities within given in UTC will be returned
+        """
+
         user = self.request.user
 
         # BASE QUERYSET: ALL ACTIVITIES BY USER BY DEFAULT

@@ -21,9 +21,11 @@ def get_utc_range_for_local_range(start_str: str, end_str: Optional[str], timezo
     else:
         # IF NO END, USE THE END OF START DATE
         end = datetime.combine(start_date, time.max).replace(tzinfo=tz).astimezone(ZoneInfo("UTC"))
-    print(start, end)
 
     return start, end
 
 def get_date_from_date_string(date_str: datetime):
+    """
+    Return date portion of a UTC datetime
+    """
     return str(date_str).split()[0]

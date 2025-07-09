@@ -6,12 +6,13 @@ from categories.serializers import CategorySerializer
 
 
 class ActivitySerializer(serializers.ModelSerializer):
+    # MAKE AUTHOR READ ONLY
     author = serializers.PrimaryKeyRelatedField(read_only=True)
     
-    # Returns all related information to the category
+    # RESPONSE WILL CONTAIN ALL INFORMATION ON A GIVEN CATEGORY
     category = CategorySerializer(read_only=True)
     
-    # User only input the catoegory
+    # CATEGORY ID WILL ONLY BE WRITTEN
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), write_only=True, source="category"
     )
@@ -31,9 +32,13 @@ class ActivitySerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
+        """
+        Customize how Activity instance is serialized
+        Replacing mood from a value to an Object with value and label
+        """
         data = super().to_representation(instance)
 
-        # Replace mood string with object
+        # REPLACE MOOD WITH MOOD OBJECT
         data["mood"] = {
             "value": instance.mood,
             "label": instance.get_mood_display()
@@ -42,20 +47,24 @@ class ActivitySerializer(serializers.ModelSerializer):
         return data
 
     def validate(self, data):
+        """
+        Validate whether new activity is in conflict of any existings timewise
+        """
+        # GET USER, START AND END TIME
         author = self.context["request"].user
         start = data["start_time"]
         end = data["end_time"]
 
-        # get all activities by this user within this time frame
-        # if there exists activities within this range, raise error
+        # GET ALL USER'S ACTIVITY WITHIN NEW ACTIVITY'S TIME FRAME
         overlapping_activities = Activity.objects.filter(
             author=author, start_time__lt=end, end_time__gt=start
         )
 
-        # Exclude self in case of update
+        # IF UPDATING (SELF.INSTANCE IS TRUE), EXCLUDE ITSELF
         if self.instance:
             overlapping_activities = overlapping_activities.exclude(id=self.instance.id)
 
+        # IF OVERLAPPING_ACTIVITIES IS NOT EMPTY, RAISE ERROR
         if overlapping_activities.exists():
             raise serializers.ValidationError(
                 "Activity times overlap with an existing activity."

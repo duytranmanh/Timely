@@ -11,13 +11,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
-    # Assign current user to the category if creating new
     def perform_create(self, serializer):
+        """
+        perform_create is called within create after validation.
+        Overwrite this function to attach user manually before saving
+        """
+        # ASSIGN CURRENT USER TO AUTHOR WHEN CREATING
         serializer.save(user=self.request.user, is_default=False)
 
     def get_queryset(self):
         """
-        Only returns categories created by user or defaults
+        Include default categories or user created by default
         """
+        # GET USER FROM REQUEST
         user = self.request.user
+
+        # Q IS USED FOR COMPLEX QUERIES 
         return Category.objects.filter(Q(user=user) | Q(is_default=True))
