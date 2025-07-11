@@ -18,60 +18,72 @@ This document outlines the API endpoints, methods, status codes, request/respons
 
 ## Authentication
 
-### Obtain JWT Token
+### Login / Obtain JWT Tokens
 
-**POST** `/api/token/`
+**POST** `/api/users/token/`  
+Sets both access and refresh tokens as HttpOnly cookies.
 
 **Status Codes:**
-
-* `200 OK`: Successful token retrieval.
-* `401 Unauthorized`: Invalid credentials.
+- `200 OK`: Tokens set in cookies
+- `401 Unauthorized`: Invalid credentials
 
 **Request:**
-
 ```json
 {
-  "username": "string",
-  "password": "string"
+  "username": "johndoe",
+  "password": "securepassword123"
 }
 ```
-
 **Response (200):**
-
 ```json
 {
-  "access": "jwt_access_token",
-  "refresh": "jwt_refresh_token"
+  "detail": "Login successful"
 }
 ```
+
+**Cookies Set:**
+
+- ```access_token```: Short-lived token for authentication
+
+
+- ```refresh_token```: Long-lived token for renewing access
 
 ---
-
 ### Refresh Access Token
+**POST** `/api/users/token/refresh/`
 
-**POST** `/api/token/refresh/`
+Retrieves refresh token from HttpOnly cookie and sets a new access token.
 
 **Status Codes:**
-
-* `200 OK`: Token refreshed successfully.
-* `401 Unauthorized`: Invalid refresh token.
+- `200 OK`: New access token set in cookie
+- `401 Unauthorized`: Expired or missing refresh token
 
 **Request:**
 
-```json
-{
-  "refresh": "jwt_refresh_token"
-}
-```
+No body required (token retrieved from cookie)
 
 **Response (200):**
-
 ```json
 {
-  "access": "new_jwt_access_token"
+  "detail": "Token refreshed"
 }
 ```
+---
+### Logout
+**POST** `/api/users/logout/`
 
+Clears both access and refresh HttpOnly cookies.
+
+Permissions: Requires authentication.
+
+**Status Codes:**
+- `200 OK`: Cookies cleared
+**Response (200):**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
 ---
 
 ## Users
@@ -349,8 +361,8 @@ Authorization: Bearer <access_token>
         "end_time": "2025-06-02T10:00:00Z",
         "category": {
             "id": 11,
-            "name": "Senior Factors Developer",
-            "is_default": false,
+            "name": "Work",
+            "is_default": true,
             "color": "#6d6859",
             "description": "",
             "user": 2
