@@ -19,7 +19,7 @@ type ActivityListProps = {
   setActivities: Dispatch<SetStateAction<ActivityRead[]>>
 }
 
-function ActivityList({setActivities, activities }: ActivityListProps) {
+function ActivityList({ setActivities, activities }: ActivityListProps) {
   const API_URL = import.meta.env.VITE_BACKEND_URL
 
   // Error Pop-Up
@@ -69,7 +69,7 @@ function ActivityList({setActivities, activities }: ActivityListProps) {
   }
 
   return (
-    <>
+    <div className="max-h-[400px] overflow-y-auto rounded-md [&_table]:border-0 [&_th]:border-0 [&_td]:border-0">
       <Table>
         <TableHeader>
           <TableRow>
@@ -124,7 +124,7 @@ function ActivityList({setActivities, activities }: ActivityListProps) {
         title="Delete Failed"
         description={errorMessage}
       />
-    </>
+    </div>
   )
 }
 

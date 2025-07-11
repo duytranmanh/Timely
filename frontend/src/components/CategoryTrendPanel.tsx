@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import {
-  CartesianGrid, LabelList, Line, LineChart, XAxis,
+  CartesianGrid, LabelList, Line, LineChart, XAxis, YAxis,
 } from "recharts"
 
 import {
@@ -36,9 +36,10 @@ type BackendTrendResponse = {
 
 type CategoryTrendPanelProps = {
   categoryOptions: ComboOption[]
+  date: Date
 }
 
-function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
+function CategoryTrendPanel({ date, categoryOptions }: CategoryTrendPanelProps) {
   const API_URL = import.meta.env.VITE_BACKEND_URL
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -69,6 +70,18 @@ function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
     })
   }, [trendData, selectedLabels])
 
+  const maxHours = useMemo(() => {
+    let max = 0
+    chartData.forEach((d) => {
+      selectedLabels.forEach((label) => {
+        if (typeof d[label] === "number") {
+          max = Math.max(max, d[label])
+        }
+      })
+    })
+    return Math.max(12, Math.ceil(max + 1)) // top out at 12
+  }, [chartData, selectedLabels])
+
   const chartConfig: ChartConfig = useMemo(() => {
     const config: ChartConfig = {}
     selectedLabels.forEach((label) => {
@@ -76,13 +89,15 @@ function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
         label,
         color: getColorForCategory(label),
       }
+      config[label].label = `${label} (hrs)`
     })
     return config
   }, [selectedLabels])
 
   async function fetchTrendReport() {
     try {
-      const res = await authFetch(`${API_URL}/reports/trends/category/`)
+      const dateIso = date.toISOString().split("T")[0]
+      const res = await authFetch(`${API_URL}/reports/trends/category/?date=${dateIso}`)
       if (!res.ok) {
         const error = await res.json()
         console.warn("Error fetching trends:", error.detail || JSON.stringify(error))
@@ -100,7 +115,7 @@ function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
 
   useEffect(() => {
     fetchTrendReport()
-  }, [])
+  }, [date])
 
   const hasData = chartData.length > 0 && selectedLabels.length > 0
 
@@ -132,10 +147,46 @@ function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
                 tickMargin={8}
                 tickFormatter={(value) => value.slice(5)} // trim YYYY- for day display
               />
+              <YAxis hide domain={[0, maxHours]} />
               <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
+                cursor={{ stroke: "#ccc", strokeWidth: 1 }}
+                isAnimationActive={false}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null
+
+                  return (
+                    <div className="rounded-md border bg-white px-3 py-2 text-xs shadow min-w-[8rem] grid gap-1.5">
+                      {payload.map((item, index) => {
+                        const color = item.color || "#000"
+                        const name = item.name || item.dataKey
+                        const value =
+                          typeof item.value === "number"
+                            ? item.value.toFixed(1)
+                            : item.value
+
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between gap-2"
+                          >
+                            <div className="flex items-center gap-1.5 min-w-[6rem]">
+                              <div
+                                className="h-2 w-2 rounded-sm"
+                                style={{ backgroundColor: color }}
+                              />
+                              <span className="text-muted-foreground">{name}</span>
+                            </div>
+                            <span className="font-mono tabular-nums text-foreground">
+                              {value} Hour(s)
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                }}
               />
+
               {selectedLabels.map((label) => (
                 <Line
                   key={label}
@@ -146,12 +197,6 @@ function CategoryTrendPanel({ categoryOptions }: CategoryTrendPanelProps) {
                   dot={{ fill: getColorForCategory(label) }}
                   activeDot={{ r: 6 }}
                 >
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="fill-foreground"
-                    fontSize={12}
-                  />
                 </Line>
               ))}
             </LineChart>

@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { Bar, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -15,15 +15,18 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 import type { ActivityRead } from "@/types/Activity"
-import { formatTime } from "@/lib/utils"
 
 type EnergyCircadianPanelProps = {
   activities: ActivityRead[]
 }
 
+/**
+ * Extract hour from a given date string
+ * @param dateStr date string (ISO formatted)
+ * @returns HH:00
+ */
 function formatHourOnly(dateStr: string): string {
   const date = new Date(dateStr)
   const hour = date.getHours().toString().padStart(2, "0")
@@ -31,7 +34,12 @@ function formatHourOnly(dateStr: string): string {
 }
 
 
-// Helper: generate full range of hour keys
+/**
+ * Helper function, generating time mark formatted as HH:00 from start to end
+ * @param start start time (inclusive)
+ * @param end end time (inclusive)
+ * @returns List of strings
+ */
 function generateHourKeys(start = 6, end = 22): string[] {
   const hours: string[] = []
   for (let h = start; h <= end; h++) {
@@ -44,15 +52,16 @@ function generateHourKeys(start = 6, end = 22): string[] {
 // Chart config
 const chartConfig: ChartConfig = {
   energy: {
-    label: "Energy Level",
+    label: "",
     color: "var(--chart-1)",
   },
 }
 
 export default function EnergyCircadianPanel({ activities }: EnergyCircadianPanelProps) {
-  // Group energy levels by formatted hour
+  // GROUP ENERGY LEVEL BY HOUR
   const energyByHour = new Map<string, number[]>()
 
+  // GROUP ENERGY LEVEL BY HOUR
   activities.forEach((a) => {
     const hourKey = formatHourOnly(a.start_time)
     if (!energyByHour.has(hourKey)) {
@@ -61,16 +70,24 @@ export default function EnergyCircadianPanel({ activities }: EnergyCircadianPane
     energyByHour.get(hourKey)!.push(a.energy_level)
   })
 
-  // Generate chart data with all hours from 06:00 to 22:00
+  // GENERATE X-AXIS LABEL FROM 00:00 TO 23:00
   const allHours = generateHourKeys(0, 23)
 
+  // FOR EACH HOUR, TAKE THE AVERAGE ENERGY OF ALL ACTIVITIES WITHIN THAT HOUR MARK
   const chartData = allHours.map((hour) => {
-    const energies = energyByHour.get(hour)
+    const matched = activities.filter(
+      (a) => formatHourOnly(a.start_time) === hour
+    )
+
+    const energies = matched.map((a) => a.energy_level)
+    const activityNames = matched.map((a) => a.category.name)
+
     return {
       hour,
-      energy: energies
+      energy: energies.length
         ? Math.round((energies.reduce((sum, e) => sum + e, 0) / energies.length) * 10) / 10
         : null,
+      activityNames,
     }
   })
 
@@ -84,16 +101,41 @@ export default function EnergyCircadianPanel({ activities }: EnergyCircadianPane
         <ChartContainer config={chartConfig}>
           <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
+            <YAxis
+              domain={[0, 11]}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              hide={true}
+            />
             <XAxis
               dataKey="hour"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
+              tickMargin={5}
             />
+            {/* TOOLTIP DISPLAY ALL ACTIVITIES NAME WITHIN GIVEN HOUR MARK */}
             <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              cursor={{ stroke: "#ccc", strokeWidth: 1 }}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null
+                const { energy, activityNames } = payload[0].payload
+
+                return (
+                  <div className="rounded-md border bg-white px-3 py-2 text-xs shadow">
+                    <div className="font-medium">Energy: {energy}</div>
+                    {activityNames?.length > 0 && (
+                      <div className="mt-1 text-muted-foreground">
+                        {activityNames.join(", ")}
+                      </div>
+                    )}
+                  </div>
+                )
+              }}
+              isAnimationActive={false}
             />
+
+            <Bar dataKey="energy" fill="transparent" />
             <Line
               dataKey="energy"
               type="linear"

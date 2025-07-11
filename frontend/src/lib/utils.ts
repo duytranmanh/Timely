@@ -22,6 +22,7 @@ export const getColorForCategory = (() => {
   const chartCount = 8
 
   return (name: string) => {
+    if (!name || name === "undefined") return "#D1D5DB" // gray-400
     if (assigned.has(name)) return assigned.get(name)!
     const index = assigned.size % chartCount
     const color = `var(--chart-${index + 1})`

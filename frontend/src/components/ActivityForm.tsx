@@ -1,4 +1,4 @@
-import { useEffect, useState, type SetStateAction, type Dispatch } from "react"
+import { useState, type SetStateAction, type Dispatch } from "react"
 import { Slider } from "./ui/slider"
 import { Textarea } from "./ui/textarea"
 import { Button } from "./ui/button"

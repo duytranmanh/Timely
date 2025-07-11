@@ -163,9 +163,8 @@ function Dashboard() {
         <hr className="my-6 border-gray-300" />
         <h2 className="text-2xl font-semibold mb-4">Insights</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
-          {/* TODO: all of these panels depends on activities, if activities changes, they all refresh */}
           <TimeUsagePanel date={date} refresh={activities.length} />
-          <CategoryTrendPanel categoryOptions={categoryOptions}/>
+          <CategoryTrendPanel date={date} categoryOptions={categoryOptions}/>
           <EnergyCircadianPanel activities={activities} />
         </div>
       </div>
