@@ -102,8 +102,6 @@ export function CategoryComboBox({
                 body: JSON.stringify(content),
             })
 
-            console.log("here")
-
             // RESPONSE STATUS CHECK
             if (!res.ok) {
                 const errorData = await res.json()

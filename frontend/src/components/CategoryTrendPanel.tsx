@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react"
 import {
-  CartesianGrid, LabelList, Line, LineChart, XAxis, YAxis,
+  CartesianGrid, Line, LineChart, XAxis, YAxis,
 } from "recharts"
 
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig,
+  ChartContainer, ChartTooltip, type ChartConfig,
 } from "@/components/ui/chart"
 import CategorySelectorButton from "./CategorySelector"
 import type { ComboOption } from "./combobox/BaseComboBox"
