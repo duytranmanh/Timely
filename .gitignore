@@ -51,3 +51,6 @@ backend/media/
 
 # Environment variables
 backend/.env
+
+# Root .env
+.env
