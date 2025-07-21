@@ -1,5 +1,4 @@
 import { BaseComboBox, type ComboOption } from "./BaseComboBox"
-import { cn } from "@/lib/utils"
 import {
     Dialog,
     DialogContent,
@@ -37,7 +36,6 @@ export function CategoryComboBox({
 
     // Form fields
     const [customValue, setCustomValue] = useState("")
-    const [customColor, setCustomColor] = useState("#F87171")
     const [customDescription, setCustomDescription] = useState("")
 
     // Error Alert
@@ -47,29 +45,7 @@ export function CategoryComboBox({
     // Success Alert
     const [successAlert, setSuccessAlert] = useState(false)
 
-
-    const presetColors = [
-        "#F87171", // red-400
-        "#FB923C", // orange-400
-        "#FACC15", // yellow-400
-        "#4ADE80", // green-400
-        "#22D3EE", // cyan-400
-        "#60A5FA", // blue-400
-        "#818CF8", // indigo-400
-        "#A78BFA", // violet-400
-        "#F472B6", // pink-400
-        "#94A3B8", // slate-400
-        "#FCD34D", // amber-300
-        "#34D399", // emerald-400
-        "#67E8F9", // sky-300
-        "#C084FC", // purple-400
-        "#FCA5A5", // rose-300
-        "#FBCFE8", // pink-200 (light)
-        "#E879F9", // fuchsia-400
-        "#D8B4FE", // purple-300
-        "#93C5FD", // blue-300
-    ]
-
+    
 
     const handleAddCustom = async () => {
         // FIELD VALIDATION
@@ -80,18 +56,11 @@ export function CategoryComboBox({
             return
         }
 
-        // COLOR CHECK
-        if (!customColor) {
-            setErrorMessage("Please select a color for your category")
-            setErrorAlert(true)
-            return
-        }
-
         // CREATE CONTENT OBJECT
         const content: CategoryCreate = {
             name: customValue,
             is_default: false,
-            color: customColor,
+            color: "#FFFFFF",
             description: customDescription
         }
 
@@ -128,7 +97,6 @@ export function CategoryComboBox({
             // RESET THE FORM
             setDialogOpen(false)
             setCustomValue("")
-            setCustomColor("#F87171")
             setCustomDescription("")
         } catch (err) {
             // CATCHING UNDEFINED ERRORS
@@ -173,22 +141,6 @@ export function CategoryComboBox({
                             value={customValue}
                             onChange={(e) => setCustomValue(e.target.value)}
                         />
-
-                        <div className="flex flex-wrap gap-2">
-                            {presetColors.map((color) => (
-                                <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => setCustomColor(color)}
-                                    className={cn(
-                                        "w-6 h-6 rounded-full border-2 transition-transform",
-                                        customColor === color ? "border-black scale-110" : "border-transparent"
-                                    )}
-                                    style={{ backgroundColor: color }}
-                                />
-                            ))}
-                        </div>
-
 
                         <Textarea
                             placeholder="Optional description"

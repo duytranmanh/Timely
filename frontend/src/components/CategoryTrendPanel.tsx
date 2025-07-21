@@ -47,12 +47,16 @@ function CategoryTrendPanel({ date, categoryOptions }: CategoryTrendPanelProps) 
   const [trendStart, setTrendStart] = useState("")
   const [trendEnd, setTrendEnd] = useState("")
 
+  // Memoize selected label strings (names) from selected category IDs.
+  // Avoids re-calculating every render unless selected categories or options change.
   const selectedLabels = useMemo(() => {
     return categoryOptions
       .filter((opt) => selectedCategories.includes(opt.value))
       .map((opt) => opt.label)
   }, [selectedCategories, categoryOptions])
 
+  // Transform backend trend data into chart-compatible format.
+  // This computation is heavy, memoize to avoid recomputing unless dependencies change.
   const chartData = useMemo(() => {
     if (trendData.length === 0 || selectedLabels.length === 0) return []
 
@@ -70,6 +74,8 @@ function CategoryTrendPanel({ date, categoryOptions }: CategoryTrendPanelProps) 
     })
   }, [trendData, selectedLabels])
 
+  // Calculate the maximum Y-axis value based on the chart data.
+  // Recharts re-renders more smoothly when the Y-axis doesn't fluctuate unnecessarily.
   const maxHours = useMemo(() => {
     let max = 0
     chartData.forEach((d) => {
@@ -82,6 +88,8 @@ function CategoryTrendPanel({ date, categoryOptions }: CategoryTrendPanelProps) 
     return Math.max(12, Math.ceil(max + 1)) // top out at 12
   }, [chartData, selectedLabels])
 
+  // Configure chart line styles (colors, labels) for each selected category.
+  // This object is passed into a memoized chart container, so it should be stable unless inputs change.
   const chartConfig: ChartConfig = useMemo(() => {
     const config: ChartConfig = {}
     selectedLabels.forEach((label) => {
@@ -96,14 +104,20 @@ function CategoryTrendPanel({ date, categoryOptions }: CategoryTrendPanelProps) 
 
   async function fetchTrendReport() {
     try {
+      // FORMAT DATE TO YYYY-MM-DD FOR BACKEND QUERY
       const dateIso = date.toISOString().split("T")[0]
+
+      // SEND REQUEST TO BACKEND
       const res = await authFetch(`${API_URL}/reports/trends/category/?date=${dateIso}`)
+
+      // HANDLE ERROR RESPONSE AND LOG WARNING
       if (!res.ok) {
         const error = await res.json()
         console.warn("Error fetching trends:", error.detail || JSON.stringify(error))
         return
       }
 
+       // PARSE SUCCESSFUL RESPONSE AND UPDATE STATE
       const result: BackendTrendResponse = await res.json()
       setTrendData(result.data)
       setTrendStart(result.start)
