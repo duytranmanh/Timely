@@ -55,7 +55,7 @@ def generate_report(user, start_date, end_date, period_label):
 
     return {
         "period": period_label,
-        "activities": activities_list
+        "activities": sorted(activities_list, key=lambda a: a["hours"], reverse=True)
     }
 
 
