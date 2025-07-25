@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from activities.models import Activity
 from categories.models import Category
+from django.db.models import Q
 
 class CategoryTrendView(APIView):
     permission_classes = [IsAuthenticated]
@@ -61,7 +62,7 @@ class CategoryTrendView(APIView):
             category_ids = []
 
         # Load categories to preserve even empty ones
-        categories = Category.objects.filter(user=user)
+        categories = Category.objects.filter(Q(user=user) | Q(is_default=True))
         if category_ids:
             categories = categories.filter(id__in=category_ids)
 
