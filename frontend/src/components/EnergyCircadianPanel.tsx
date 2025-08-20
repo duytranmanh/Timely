@@ -1,6 +1,5 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Bar, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
@@ -149,9 +148,6 @@ export default function EnergyCircadianPanel({ activities }: EnergyCircadianPane
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% today <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="text-muted-foreground leading-none">
           Showing energy pattern across the day
         </div>

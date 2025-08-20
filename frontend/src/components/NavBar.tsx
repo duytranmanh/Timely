@@ -24,6 +24,8 @@ export function Navbar() {
       }
     } catch (error) {
       console.error("Logout error:", error)
+    } finally {
+      navigate("/login")
     }
   }
   
