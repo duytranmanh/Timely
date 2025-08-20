@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import type { DashboardView } from "@/types/DashboardView"
 
 function Dashboard() {
   const API_URL = import.meta.env.VITE_BACKEND_URL
@@ -28,6 +29,9 @@ function Dashboard() {
 
   // Trigger Refresh for all Reports
   // const [refresh, setRefresh] = useState(0)
+
+  // Set view mode
+  const [view, setView] = useState<DashboardView>("insights")
 
   // Contains categories and moods for drop down
   const [categoryOptions, setCategoryOptions] = useState<ComboOption[]>([])
@@ -129,7 +133,7 @@ function Dashboard() {
 
   return (
     <>
-      <Navbar />
+      <Navbar setView={setView} />
       <div className="container mx-auto px-4 pt-20 pb-20 space-y-10">
         {/* DATE SELECTOR HEADER */}
         <section className="space-y-3">
@@ -153,7 +157,7 @@ function Dashboard() {
               setCategoryOptions={setCategoryOptions}
             />
           </div> */}
-        <div className="w-full">
+        {/* <div className="w-full">
           <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Logged Activities</CardTitle>
@@ -186,14 +190,54 @@ function Dashboard() {
         {/* </div> */}
 
         {/* REPORTS */}
-        <hr className="my-6 border-gray-300" />
+        {/* <hr className="my-6 border-gray-300" />
         <h2 className="text-2xl font-semibold mb-4">Insights</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <TimeUsagePanel date={date} refresh={activities.length} />
           <CategoryTrendPanel date={date} categoryOptions={categoryOptions} />
           <EnergyCircadianPanel activities={activities} />
         </div>
+      </div> */}
+        {view === "insights" && (
+          <div className="flex flex-col md:flex-row justify-between gap-6">
+            <TimeUsagePanel date={date} refresh={activities.length} />
+            <CategoryTrendPanel date={date} categoryOptions={categoryOptions} />
+            <EnergyCircadianPanel activities={activities} />
+          </div>
+        )}
+
+        {view === "activities" && (
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Logged Activities</CardTitle>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="outline">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Log Activity</DialogTitle>
+                  </DialogHeader>
+                  <ActivityForm
+                    date={date}
+                    activities={activities}
+                    setActivities={setActivities}
+                    moodOptions={moodOptions}
+                    categoryOptions={categoryOptions}
+                    setCategoryOptions={setCategoryOptions}
+                  />
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              <ActivityList setActivities={setActivities} activities={activities} />
+            </CardContent>
+          </Card>
+        )}
       </div>
+
     </>
   )
 }

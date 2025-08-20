@@ -4,9 +4,15 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuL
 import { TimerResetIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useNavigate } from "react-router-dom"
+import type { Dispatch, SetStateAction } from "react"
+import { Button } from "./ui/button"
+import type { DashboardView } from "@/types/DashboardView"
 
+type NavBarProps = {
+  setView: Dispatch<SetStateAction<DashboardView>>
+}
 
-export function Navbar() {
+export function Navbar({ setView }: NavBarProps) {
   const API_URL = import.meta.env.VITE_BACKEND_URL
   const navigate = useNavigate()
 
@@ -28,7 +34,7 @@ export function Navbar() {
       navigate("/login")
     }
   }
-  
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border bg-background px-4 py-3">
       <div className="mx-auto flex max-w-screen-xl items-center justify-between">
@@ -43,12 +49,26 @@ export function Navbar() {
           <NavigationMenuList className="flex gap-4">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <button
+                <Button variant="ghost" onClick={() => setView("insights")}>
+                  Insights
+                </Button>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Button variant="ghost" onClick={() => setView("activities")}>
+                  Manage Activities
+                </Button>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Button
                   onClick={handleLogout}
                   className={cn("text-sm font-medium transition-colors hover:text-destructive")}
                 >
                   Logout
-                </button>
+                </Button>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
