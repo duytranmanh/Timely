@@ -10,6 +10,15 @@ import EnergyCircadianPanel from "@/components/EnergyCircadianPanel"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { authFetch } from "@/lib/authFetch"
 import type { ComboOption } from "@/components/combobox/BaseComboBox"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 function Dashboard() {
   const API_URL = import.meta.env.VITE_BACKEND_URL
@@ -71,7 +80,7 @@ function Dashboard() {
     try {
       // EXTRACT JUST THE DAY FROM DATE
       const isoDate = date.toISOString().split("T")[0]
-      
+
       // GET TIMEZONE
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -133,8 +142,8 @@ function Dashboard() {
 
         {/* FORM + LIST */}
 
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-1/3">
+        {/* <div className="flex flex-col md:flex-row gap-6"> */}
+        {/* <div className="w-full md:w-1/3">
             <ActivityForm
               date={date}
               activities={activities}
@@ -143,28 +152,45 @@ function Dashboard() {
               categoryOptions={categoryOptions}
               setCategoryOptions={setCategoryOptions}
             />
-          </div>
-          <div className="w-full md:w-2/3">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle>Logged Activities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ActivityList
-                  setActivities={setActivities}
-                  activities={activities}
-                />
-              </CardContent>
-            </Card>
-          </div>
+          </div> */}
+        <div className="w-full">
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Logged Activities</CardTitle>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="outline">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <ActivityForm
+                    date={date}
+                    activities={activities}
+                    setActivities={setActivities}
+                    moodOptions={moodOptions}
+                    categoryOptions={categoryOptions}
+                    setCategoryOptions={setCategoryOptions}
+                  />
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              <ActivityList
+                setActivities={setActivities}
+                activities={activities}
+              />
+            </CardContent>
+          </Card>
         </div>
+        {/* </div> */}
 
         {/* REPORTS */}
         <hr className="my-6 border-gray-300" />
         <h2 className="text-2xl font-semibold mb-4">Insights</h2>
         <div className="flex flex-col md:flex-row justify-between gap-6">
           <TimeUsagePanel date={date} refresh={activities.length} />
-          <CategoryTrendPanel date={date} categoryOptions={categoryOptions}/>
+          <CategoryTrendPanel date={date} categoryOptions={categoryOptions} />
           <EnergyCircadianPanel activities={activities} />
         </div>
       </div>
