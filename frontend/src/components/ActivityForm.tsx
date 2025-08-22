@@ -147,7 +147,7 @@ function ActivityForm({ date, activities, setActivities, moodOptions, categoryOp
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-md shadow-md bg-white w-full h-full">
-        <h2 className="text-xl font-semibold">Log Activity</h2>
+        {/* <h2 className="text-xl font-semibold">Log Activity</h2> */}
 
         {/* CATEGORY SELECTION */}
         <CategoryComboBox
