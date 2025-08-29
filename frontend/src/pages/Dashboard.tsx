@@ -133,7 +133,7 @@ function Dashboard() {
 
   return (
     <>
-      <Navbar setView={setView} />
+      <Navbar setView={setView} view={view} />
       <div className="container mx-auto px-4 pt-20 pb-20 space-y-10">
         {/* DATE SELECTOR HEADER */}
         <section className="space-y-3">

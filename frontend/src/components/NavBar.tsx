@@ -10,9 +10,10 @@ import type { DashboardView } from "@/types/DashboardView"
 
 type NavBarProps = {
   setView: Dispatch<SetStateAction<DashboardView>>
+  view: DashboardView
 }
 
-export function Navbar({ setView }: NavBarProps) {
+export function Navbar({ setView, view }: NavBarProps) {
   const API_URL = import.meta.env.VITE_BACKEND_URL
   const navigate = useNavigate()
 
@@ -49,23 +50,39 @@ export function Navbar({ setView }: NavBarProps) {
           <NavigationMenuList className="flex gap-4">
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Button variant="ghost" onClick={() => setView("insights")}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    view === "insights" && "bg-accent text-accent-foreground"
+                  )}
+                  onClick={() => setView("insights")}
+                >
                   Insights
                 </Button>
               </NavigationMenuLink>
             </NavigationMenuItem>
+
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Button variant="ghost" onClick={() => setView("activities")}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    view === "activities" && "bg-accent text-accent-foreground"
+                  )}
+                  onClick={() => setView("activities")}
+                >
                   Manage Activities
                 </Button>
               </NavigationMenuLink>
             </NavigationMenuItem>
+
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Button
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-destructive"
+                  )}
                   onClick={handleLogout}
-                  className={cn("text-sm font-medium transition-colors hover:text-destructive")}
                 >
                   Logout
                 </Button>

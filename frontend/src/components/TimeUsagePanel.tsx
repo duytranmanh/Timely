@@ -93,7 +93,7 @@ function TimeUsagePanel({ date, refresh }: ReportPanelProps) {
           <CardDescription>{periodText}</CardDescription>
         </div>
         <Select value={reportType} onValueChange={setReportType}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-[160px] cursor-pointer">
             <SelectValue placeholder="Report Type" />
           </SelectTrigger>
           <SelectContent>
